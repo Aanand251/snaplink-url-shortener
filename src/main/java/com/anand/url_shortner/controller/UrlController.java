@@ -1,0 +1,69 @@
+package com.anand.url_shortner.controller;
+
+import com.anand.url_shortner.dto.AnalyticsResponse;
+import com.anand.url_shortner.dto.CreateUrlRequest;
+
+import com.anand.url_shortner.entity.UrlMapping;
+
+import com.anand.url_shortner.service.ClickService;
+import com.anand.url_shortner.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/url")
+@RequiredArgsConstructor
+@Tag(
+        name = "URL Controller",
+        description = "URL Shortening APIs"
+)
+public class UrlController {
+
+ private final UrlService urlService;
+ private final ClickService clickService;
+
+    @Operation(
+            summary = "Get All URLs",
+            description = "Returns all stored URL mappings"
+    )
+@GetMapping
+ public ResponseEntity<List<UrlMapping>> getAllUrls() {
+     return  ResponseEntity.ok(urlService
+             .getAllUrls());
+ }
+
+
+    @Operation(
+            summary = "Create Short URL",
+            description = "Creates a short URL from a long URL"
+    )
+ @PostMapping("/shorten")
+ public ResponseEntity<String>  createUrl (@Valid @RequestBody CreateUrlRequest request) {
+    String shortcode = urlService.createShortUrl(request.getOriginalUrl());
+  return  ResponseEntity
+          .status(HttpStatus.CREATED)
+          .body(shortcode);
+ }
+
+
+    @Operation(
+            summary = "Get Analytics",
+            description = "Returns click count for a short URL"
+    )
+    @GetMapping("/analytics/{shortCode}")
+    public ResponseEntity<AnalyticsResponse> getClickCount(
+            @PathVariable String shortCode) {
+    long clicks =  clickService.getClickCount(shortCode);
+        AnalyticsResponse response =
+                new AnalyticsResponse(shortCode, clicks);
+        return ResponseEntity.ok(response);
+    }
+}
