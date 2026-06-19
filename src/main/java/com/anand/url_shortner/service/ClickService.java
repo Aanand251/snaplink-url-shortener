@@ -15,31 +15,67 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class  ClickService {
+public class ClickService {
 
     private final ClickRepository clickRepository;
     private final UrlRepository urlRepository;
 
 
-    public void saveClick(String shortCode) {
+    public void saveClick(String shortCode, String browser,
+                          String device) {
         Optional<UrlMapping> result =
                 urlRepository.findByShortCode(shortCode);
-if (result.isPresent()) {
-    UrlMapping urlMapping = result.get();
-    Clickevent clickevent = new Clickevent();
-    clickevent.setUrlMapping(urlMapping);
-    clickevent.setClickedAt(new Date());
-    clickRepository.save(clickevent);
-    log.info("Click recorded for short code: {}", shortCode);
+        if (result.isPresent()) {
+            UrlMapping urlMapping = result.get();
+            Clickevent clickevent = new Clickevent();
+            clickevent.setUrlMapping(urlMapping);
+            clickevent.setBrowser(browser);
+            clickevent.setDevice(device);
+            clickevent.setClickedAt(new Date());
+            clickRepository.save(clickevent);
+            log.info("Click recorded for short code: {}", shortCode);
 
-}
+        }
 
 
     }
 
-    public  long getClickCount(String shortCode) {
+    public long getClickCount(String shortCode) {
         return clickRepository
                 .countByUrlMapping_ShortCode(shortCode);
+    }
+
+    public String detectBrowser(String userAgent) {
+        if (userAgent == null) {
+            return "Unknown";
+        }
+        if (userAgent.contains("Firefox")) {
+            return "Firefox";
+        }
+        if (userAgent.contains("Edg")) {
+            return "Edge";
+        }
+        if (userAgent.contains("Chrome")) {
+            return "Chrome";
+        }
+        if (userAgent.contains("Safari")) {
+            return "Safari";
+        }
+        if (userAgent.contains("Opera")) {
+            return "Opera";
+        }
+
+        return "Unknown";
+    }
+
+    public String detectDevice(String userAgent) {
+        if (userAgent == null) {
+            return "Unknown";
+        }
+        if (userAgent.contains("Mobile")) {
+            return "Mobile";
+        }
+        return "Desktop";
     }
 
 

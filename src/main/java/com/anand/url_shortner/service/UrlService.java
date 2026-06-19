@@ -51,7 +51,7 @@ public class  UrlService {
     Optional<UrlMapping> result = urlRepository.findByShortCode(shortCode);
      if(result.isPresent()) {
          log.info("Redirecting short code: {}", shortCode);
-         clickService.saveClick(shortCode);
+//         clickService.saveClick(shortCode);
 
          return result.get().getOriginalUrl();
 
