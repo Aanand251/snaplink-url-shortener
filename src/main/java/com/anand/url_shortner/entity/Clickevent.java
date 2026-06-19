@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity
 @Data
 public class Clickevent {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Id
    private  Long  id;
 

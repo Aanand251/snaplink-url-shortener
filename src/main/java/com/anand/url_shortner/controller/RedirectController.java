@@ -1,4 +1,5 @@
 package com.anand.url_shortner.controller;
+import com.anand.url_shortner.repository.ClickRepository;
 import com.anand.url_shortner.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RedirectController {
     private final UrlService urlService;
+    private  final ClickRepository clickRepository;
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void>  redirect  (
