@@ -3,9 +3,12 @@ package com.anand.url_shortner.controller;
 import com.anand.url_shortner.dto.AnalyticsResponse;
 import com.anand.url_shortner.dto.CreateUrlRequest;
 
+import com.anand.url_shortner.dto.DashboardResponse;
 import com.anand.url_shortner.entity.UrlMapping;
 
+import com.anand.url_shortner.repository.ClickRepository;
 import com.anand.url_shortner.service.ClickService;
+import com.anand.url_shortner.service.DashboardService;
 import com.anand.url_shortner.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -27,8 +31,11 @@ import java.util.List;
 )
 public class UrlController {
 
+    private final DashboardService dashboardService;
+
  private final UrlService urlService;
  private final ClickService clickService;
+    private final ClickRepository clickRepository;
 
     @Operation(
             summary = "Get All URLs",
@@ -61,9 +68,22 @@ public class UrlController {
     @GetMapping("/analytics/{shortCode}")
     public ResponseEntity<AnalyticsResponse> getClickCount(
             @PathVariable String shortCode) {
-    long clicks =  clickService.getClickCount(shortCode);
+        long clicks = clickService.getClickCount(shortCode);
+
+        String topBrowser = clickRepository.findTopBrowser(shortCode);
+        String topDevice = clickRepository.findTopDevice(shortCode);
         AnalyticsResponse response =
-                new AnalyticsResponse(shortCode, clicks);
+                new AnalyticsResponse(shortCode, clicks, topBrowser, topDevice);
         return ResponseEntity.ok(response);
+
     }
-}
+        @GetMapping("/dashboard/{shortCode}")
+        public ResponseEntity<DashboardResponse> getDashboard(
+                @PathVariable String shortCode) {
+
+            return ResponseEntity.ok(
+                    dashboardService.getDashboard(shortCode)
+            );
+        }
+    }
+

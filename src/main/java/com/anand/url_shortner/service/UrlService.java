@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class  UrlService {
         UrlMapping urlMapping = new UrlMapping();
         urlMapping.setOriginalUrl(originalUrl);
         urlMapping.setShortCode(shortcode);
-        urlMapping.setCreatedAt(new Date());
+        urlMapping.setCreatedAt(LocalDateTime.now());
 
         urlRepository.save(urlMapping);
         log.info("Short URL created: {}", shortcode);

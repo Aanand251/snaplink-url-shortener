@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.anand.url_shortner.repository.UrlRepository;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +20,11 @@ public class ClickService {
 
     private final ClickRepository clickRepository;
     private final UrlRepository urlRepository;
+    private final GeoLocationService geoLocationService;
 
 
     public void saveClick(String shortCode, String browser,
-                          String device) {
+                          String device , String country) {
         Optional<UrlMapping> result =
                 urlRepository.findByShortCode(shortCode);
         if (result.isPresent()) {
@@ -31,7 +33,9 @@ public class ClickService {
             clickevent.setUrlMapping(urlMapping);
             clickevent.setBrowser(browser);
             clickevent.setDevice(device);
-            clickevent.setClickedAt(new Date());
+            clickevent.setCountry(country);
+            clickevent.setClickedAt(LocalDateTime.now());
+
             clickRepository.save(clickevent);
             log.info("Click recorded for short code: {}", shortCode);
 
@@ -78,5 +82,8 @@ public class ClickService {
         return "Desktop";
     }
 
+    public String detectCountry(String ipAddress) {
+        return geoLocationService.getCountry(ipAddress);
+    }
 
 }

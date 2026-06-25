@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,7 +17,7 @@ public class Clickevent {
     private String device;
     private String country;
     private String browser;
-    private Date clickedAt;
+    private LocalDateTime clickedAt;
 
 
     @ManyToOne

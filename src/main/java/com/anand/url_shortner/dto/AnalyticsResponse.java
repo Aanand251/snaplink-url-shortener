@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class AnalyticsResponse {
     private String shortCode;
     private long clicks;
+    private String topBrowser;
+    private String topDevice;
 }

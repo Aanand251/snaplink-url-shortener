@@ -23,11 +23,14 @@ public class RedirectController {
             @PathVariable String shortCode,
             @RequestHeader(value = "User-Agent" ,
                  required = false   )
-            String userAgent) {
+            String userAgent,
+            jakarta.servlet.http.HttpServletRequest request) {
         String originalUrl = urlService.getOriginalUrl(shortCode);
         String browser = clickService.detectBrowser(userAgent);
 
         String device = clickService.detectDevice(userAgent);
+        String ipAddress = request.getRemoteAddr();
+        String country = clickService.detectCountry(ipAddress);
 
         if(originalUrl == null) {
             return ResponseEntity.notFound().build();
@@ -35,7 +38,8 @@ public class RedirectController {
         clickService.saveClick(
                 shortCode,
                 browser,
-                device
+                device,
+                country
         );
         log.info("Browser: {}, Device: {}", browser, device);
         return ResponseEntity
