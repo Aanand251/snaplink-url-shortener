@@ -19,6 +19,9 @@ import java.util.List;
 @Table(name = "users")
 public class User  implements UserDetails {
 
+    @OneToMany(mappedBy = "user")
+    private List<UrlMapping> urls;
+
             @Id
             @GeneratedValue(strategy = GenerationType.IDENTITY)
        private   long id;

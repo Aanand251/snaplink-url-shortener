@@ -39,5 +39,10 @@ public class AuthController {
           return ResponseEntity .ok(response);
         }
 
+    @GetMapping("/me")
+    public String me() {
+        return "Authenticated Successfully";
+    }
+
 
 }

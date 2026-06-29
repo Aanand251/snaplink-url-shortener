@@ -10,6 +10,10 @@ import java.util.List;
 @Entity
 @Data
 public class UrlMapping {
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private  User user;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
