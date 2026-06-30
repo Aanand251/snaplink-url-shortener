@@ -1,6 +1,7 @@
 package com.anand.url_shortner.repository;
 
 import com.anand.url_shortner.entity.UrlMapping;
+import com.anand.url_shortner.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
@@ -13,7 +14,9 @@ public interface UrlRepository
 
     Optional<UrlMapping> findByShortCode(String shortCode);
 
-    boolean getUrlMappingById(Long id);
+    List<UrlMapping> findByUser(User user);
 
-    List<UrlMapping> Id(Long id);
+    Optional<UrlMapping> findByIdAndUser(Long id, User user);
+
+
 }

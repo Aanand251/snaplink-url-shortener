@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,8 +20,8 @@ import java.util.List;
 @Table(name = "users")
 public class User  implements UserDetails {
 
-    @OneToMany(mappedBy = "user")
-    private List<UrlMapping> urls;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<UrlMapping> urls = new ArrayList<>();
 
             @Id
             @GeneratedValue(strategy = GenerationType.IDENTITY)

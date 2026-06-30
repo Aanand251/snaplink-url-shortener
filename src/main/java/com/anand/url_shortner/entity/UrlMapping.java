@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class UrlMapping {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private  User user;
     @Id

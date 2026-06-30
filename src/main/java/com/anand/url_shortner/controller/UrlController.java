@@ -4,12 +4,14 @@ import com.anand.url_shortner.dto.AnalyticsResponse;
 import com.anand.url_shortner.dto.CreateUrlRequest;
 
 import com.anand.url_shortner.dto.DashboardResponse;
+import com.anand.url_shortner.dto.UrlResponse;
 import com.anand.url_shortner.entity.UrlMapping;
 
 import com.anand.url_shortner.repository.ClickRepository;
 import com.anand.url_shortner.service.ClickService;
 import com.anand.url_shortner.service.DashboardService;
 import com.anand.url_shortner.service.UrlService;
+import com.anand.url_shortner.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,6 +38,7 @@ public class UrlController {
  private final UrlService urlService;
  private final ClickService clickService;
     private final ClickRepository clickRepository;
+
 
     @Operation(
             summary = "Get All URLs",
@@ -85,5 +88,21 @@ public class UrlController {
                     dashboardService.getDashboard(shortCode)
             );
         }
+
+    @GetMapping("/my-urls")
+    public ResponseEntity<List<UrlResponse>> getMyUrls() {
+
+        return ResponseEntity.ok(
+                urlService.getMyUrls()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUrl(@PathVariable Long id) {
+        System.out.println("===== DELETE CONTROLLER HIT =====");
+        urlService.deleteUrl(id);
+
+        return ResponseEntity.ok("URL deleted successfully");
+    }
     }
 
