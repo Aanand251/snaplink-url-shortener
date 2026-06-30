@@ -1,5 +1,4 @@
 package com.anand.url_shortner.controller;
-import com.anand.url_shortner.repository.ClickRepository;
 import com.anand.url_shortner.service.UrlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import com.anand.url_shortner.service.ClickService;
 @RequiredArgsConstructor
 public class RedirectController {
     private final UrlService urlService;
-    private  final ClickRepository clickRepository;
     private final ClickService clickService;
 
     @GetMapping("/{shortCode}")
@@ -32,9 +30,6 @@ public class RedirectController {
         String ipAddress = request.getRemoteAddr();
         String country = clickService.detectCountry(ipAddress);
 
-        if(originalUrl == null) {
-            return ResponseEntity.notFound().build();
-        }
         clickService.saveClick(
                 shortCode,
                 browser,

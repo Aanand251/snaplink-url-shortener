@@ -1,18 +1,19 @@
 package com.anand.url_shortner.service;
 
+import com.anand.url_shortner.dto.UpdateUrlRequest;
 import com.anand.url_shortner.dto.UrlResponse;
 import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.entity.User;
 import com.anand.url_shortner.exception.UrlNotFoundException;
 import com.anand.url_shortner.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import com.anand.url_shortner.exception.ResourceAccessDeniedException;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -27,7 +28,6 @@ public class  UrlService {
 
    // repo injection
    private final UrlRepository urlRepository;
-    private final ClickService clickService;
     private final UserService userService;
 
 
@@ -66,7 +66,7 @@ public String createShortUrl(String originalUrl) {
     Optional<UrlMapping> result = urlRepository.findByShortCode(shortCode);
      if(result.isPresent()) {
          log.info("Redirecting short code: {}", shortCode);
-//         clickService.saveClick(shortCode);
+
 
          return result.get().getOriginalUrl();
 
@@ -93,6 +93,8 @@ public List<UrlMapping> getAllUrls() {
     log.info("Fetching all URLs");
         return urlRepository.findAll();
 }
+
+//GETURLLIST
     public List<UrlResponse> getMyUrls() {
         User currentUser = userService.getCurrentUser();
         return urlRepository.findByUser(currentUser)
@@ -106,17 +108,34 @@ public List<UrlMapping> getAllUrls() {
                 .toList();
     }
 
-    public void deleteUrl(Long id) {
-        System.out.println("===== DELETE SERVICE HIT =====");
+//DELETE
+public void deleteUrl(Long id) {
+
     User currentUser = userService.getCurrentUser();
-        System.out.println("Current User = " + currentUser.getEmail());
+
     UrlMapping urlMapping = urlRepository
             .findByIdAndUser(id, currentUser)
-        .orElseThrow(() ->
-                new RuntimeException( "URl not found or access denied "));
+            .orElseThrow(ResourceAccessDeniedException::new);
 
-        System.out.println("Owner = " + urlMapping.getUser().getEmail());
     urlRepository.delete(urlMapping);
+
+    log.info("URL deleted successfully. ID: {}", id);
+}
+
+    //update
+    public void updateUrl(Long id, UpdateUrlRequest request) {
+
+        User currentUser = userService.getCurrentUser();
+
+        UrlMapping urlMapping = urlRepository
+                .findByIdAndUser(id, currentUser)
+                .orElseThrow(ResourceAccessDeniedException::new);
+
+        urlMapping.setOriginalUrl(request.getOriginalUrl());
+
+        urlRepository.save(urlMapping);
+
+        log.info("URL updated successfully. ID: {}", id);
     }
 
 }

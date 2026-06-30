@@ -42,4 +42,19 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(ResourceAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            ResourceAccessDeniedException ex) {
+
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        HttpStatus.FORBIDDEN.value(),
+                        ex.getMessage()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errorResponse);
+    }
 }

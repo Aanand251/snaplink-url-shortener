@@ -1,10 +1,7 @@
 package com.anand.url_shortner.controller;
 
-import com.anand.url_shortner.dto.AnalyticsResponse;
-import com.anand.url_shortner.dto.CreateUrlRequest;
+import com.anand.url_shortner.dto.*;
 
-import com.anand.url_shortner.dto.DashboardResponse;
-import com.anand.url_shortner.dto.UrlResponse;
 import com.anand.url_shortner.entity.UrlMapping;
 
 import com.anand.url_shortner.repository.ClickRepository;
@@ -103,6 +100,17 @@ public class UrlController {
         urlService.deleteUrl(id);
 
         return ResponseEntity.ok("URL deleted successfully");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUrl(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUrlRequest request
+    ) {
+
+        urlService.updateUrl(id, request);
+
+        return ResponseEntity.ok("URL updated successfully");
     }
     }
 
