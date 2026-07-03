@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,9 @@ public class  UrlService {
    // repo injection
    private final UrlRepository urlRepository;
     private final UserService userService;
+    private final RedisService redisService;
 
+    private static final String URL_CACHE_PREFIX = "url:";
 
 // creating short url;
 public String createShortUrl(String originalUrl) {
@@ -59,22 +62,8 @@ public String createShortUrl(String originalUrl) {
     return shortCode;
 }
 
-    public String getOriginalUrl(String shortCode) {
-     if(shortCode == null || shortCode.isEmpty()) {
-         return null;
-     }
-    Optional<UrlMapping> result = urlRepository.findByShortCode(shortCode);
-     if(result.isPresent()) {
-         log.info("Redirecting short code: {}", shortCode);
 
 
-         return result.get().getOriginalUrl();
-
-     }
-        log.error("Short code not found: {}", shortCode);
-        throw new UrlNotFoundException(shortCode);
-
-    }
 
 
 // generate 4 random characters
@@ -118,7 +107,7 @@ public void deleteUrl(Long id) {
             .orElseThrow(ResourceAccessDeniedException::new);
 
     urlRepository.delete(urlMapping);
-
+    redisService.delete(URL_CACHE_PREFIX + urlMapping.getShortCode());
     log.info("URL deleted successfully. ID: {}", id);
 }
 
@@ -134,6 +123,7 @@ public void deleteUrl(Long id) {
         urlMapping.setOriginalUrl(request.getOriginalUrl());
 
         urlRepository.save(urlMapping);
+        redisService.delete(URL_CACHE_PREFIX + urlMapping.getShortCode());
 
         log.info("URL updated successfully. ID: {}", id);
     }

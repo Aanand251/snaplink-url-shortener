@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AnalyticsService {
 
-    private final ClickService clickService;
+    private final ClickTrackingService clickTrackingService;
     private final ClickRepository clickRepository;
 
     public AnalyticsResponse getAnalytics(String shortCode) {
-        long clicks = clickService.getClickCount(shortCode);
+        long clicks = clickTrackingService.getClickCount(shortCode);
 
         String topBrowser = clickRepository.findTopBrowser(shortCode);
         String topDevice = clickRepository.findTopDevice(shortCode);

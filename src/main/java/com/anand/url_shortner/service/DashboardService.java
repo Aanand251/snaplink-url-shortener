@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
     private  final UrlRepository urlRepository;
     private final ClickRepository clickRepository;
-    private final ClickService clickService;
+    private final ClickTrackingService clickService;
 
     public DashboardResponse getDashboard(String shortCode) {
 

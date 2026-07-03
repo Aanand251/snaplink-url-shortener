@@ -5,10 +5,9 @@ import com.anand.url_shortner.dto.*;
 import com.anand.url_shortner.entity.UrlMapping;
 
 import com.anand.url_shortner.repository.ClickRepository;
-import com.anand.url_shortner.service.ClickService;
+import com.anand.url_shortner.service.ClickTrackingService;
 import com.anand.url_shortner.service.DashboardService;
 import com.anand.url_shortner.service.UrlService;
-import com.anand.url_shortner.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,7 +32,7 @@ public class UrlController {
     private final DashboardService dashboardService;
 
  private final UrlService urlService;
- private final ClickService clickService;
+ private final ClickTrackingService clickService;
     private final ClickRepository clickRepository;
 
 

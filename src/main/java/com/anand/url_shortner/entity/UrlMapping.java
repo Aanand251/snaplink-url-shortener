@@ -24,4 +24,7 @@ public class UrlMapping {
 
     @OneToMany(mappedBy = "urlMapping")
     private List<Clickevent> clickEvents;
+
+    @Column(nullable = false)
+    private Long totalClicks = 0L;
 }
