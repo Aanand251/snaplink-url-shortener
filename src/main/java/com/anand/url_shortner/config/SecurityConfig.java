@@ -15,12 +15,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.anand.url_shortner.filter.RateLimitFilter;
 
 @Configuration
 @RequiredArgsConstructor
   public class SecurityConfig{
 
     private final JwtFilter jwtFilter;
+    private final RateLimitFilter rateLimitFilter;
  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -38,10 +40,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                 .addFilterBefore(
-             jwtFilter,
-             UsernamePasswordAuthenticationFilter.class
-     )
+                .addFilterBefore(
+                        rateLimitFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .httpBasic(Customizer.withDefaults());
 
             return http.build();
