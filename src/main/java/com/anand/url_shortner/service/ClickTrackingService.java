@@ -4,6 +4,7 @@ import com.anand.url_shortner.entity.Clickevent;
 import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.repository.ClickRepository;
 import com.anand.url_shortner.repository.UrlRepository;
+import com.anand.url_shortner.util.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -19,6 +20,7 @@ public class ClickTrackingService {
     private final ClickRepository clickRepository;
     private final UrlRepository urlRepository;
     private final GeoLocationService geoLocationService;
+    private final RedisService redisService;
 
     @Async
     public void saveClick(
@@ -29,6 +31,9 @@ public class ClickTrackingService {
         String browser = detectBrowser(userAgent);
         String device = detectDevice(userAgent);
         String country = detectCountry(ipAddress);
+        redisService.increment(
+                CacheKeys.clickCount(shortCode)
+        );
 
         UrlMapping urlMapping = urlRepository.findByShortCode(shortCode)
                 .orElse(null);

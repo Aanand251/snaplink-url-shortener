@@ -3,6 +3,7 @@ package com.anand.url_shortner.service;
 import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.exception.UrlNotFoundException;
 import com.anand.url_shortner.repository.UrlRepository;
+import com.anand.url_shortner.util.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class RedirectService {
 
     private final UrlRepository urlRepository;
     private final RedisService redisService;
-    private static final String URL_CACHE_PREFIX = "url:";
+
 
     public String getOriginalUrl(String shortCode) {
 
@@ -27,7 +28,7 @@ public class RedirectService {
             return null;
         }
 
-        String cacheKey = URL_CACHE_PREFIX + shortCode;
+        String cacheKey = CacheKeys.url(shortCode);
 
         // 1. Check Redis
         String cachedUrl = redisService.get(cacheKey);

@@ -6,6 +6,7 @@ import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.entity.User;
 import com.anand.url_shortner.exception.UrlNotFoundException;
 import com.anand.url_shortner.repository.UrlRepository;
+import com.anand.url_shortner.util.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import com.anand.url_shortner.exception.ResourceAccessDeniedException;
 
@@ -32,7 +33,7 @@ public class  UrlService {
     private final UserService userService;
     private final RedisService redisService;
 
-    private static final String URL_CACHE_PREFIX = "url:";
+
 
 // creating short url;
 public String createShortUrl(String originalUrl) {
@@ -107,7 +108,7 @@ public void deleteUrl(Long id) {
             .orElseThrow(ResourceAccessDeniedException::new);
 
     urlRepository.delete(urlMapping);
-    redisService.delete(URL_CACHE_PREFIX + urlMapping.getShortCode());
+    redisService.delete(CacheKeys.url(urlMapping.getShortCode()));
     log.info("URL deleted successfully. ID: {}", id);
 }
 
@@ -123,7 +124,7 @@ public void deleteUrl(Long id) {
         urlMapping.setOriginalUrl(request.getOriginalUrl());
 
         urlRepository.save(urlMapping);
-        redisService.delete(URL_CACHE_PREFIX + urlMapping.getShortCode());
+        redisService.delete(CacheKeys.url(urlMapping.getShortCode()));
 
         log.info("URL updated successfully. ID: {}", id);
     }
