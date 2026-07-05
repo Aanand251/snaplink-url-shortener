@@ -56,7 +56,7 @@ import com.anand.url_shortner.filter.RateLimitFilter;
                         jwtFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(AbstractHttpConfigurer::disable);
 
             return http.build();
     }

@@ -18,15 +18,27 @@ import java.security.SecureRandom;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-
-
+import java.util.Set;
 
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class  UrlService {
+
+    private static final Set<String> RESERVED_ALIASES = Set.of(
+            "api",
+            "auth",
+            "login",
+            "register",
+            "swagger-ui",
+            "swagger",
+            "v3",
+            "actuator",
+            "error",
+            "r",
+            "favicon.ico"
+    );
 
    // repo injection
    private final UrlRepository urlRepository;
@@ -59,7 +71,13 @@ public String createShortUrl(CreateUrlRequest request) {
     if (request.getCustomAlias() != null &&
             !request.getCustomAlias().isBlank()) {
 
-        shortCode = request.getCustomAlias();
+        shortCode = request.getCustomAlias().trim().toLowerCase();
+
+        if (RESERVED_ALIASES.contains(shortCode)) {
+            throw new IllegalArgumentException(
+                    "This alias is reserved."
+            );
+        }
 
         if (urlRepository.findByShortCode(shortCode).isPresent()) {
             throw new IllegalArgumentException(
