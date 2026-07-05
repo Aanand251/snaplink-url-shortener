@@ -20,6 +20,7 @@ import java.util.List;
 @Table(name = "users")
 public class User  implements UserDetails {
 
+    @Builder.Default
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<UrlMapping> urls = new ArrayList<>();
 
