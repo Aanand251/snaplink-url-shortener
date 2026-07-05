@@ -17,6 +17,9 @@ public class Clickevent {
     private String device;
     private String country;
     private String browser;
+
+
+    @Column(nullable = false)
     private LocalDateTime clickedAt;
 
 

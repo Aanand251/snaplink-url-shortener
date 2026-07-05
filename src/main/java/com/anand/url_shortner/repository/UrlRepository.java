@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.query.Param;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,5 +35,6 @@ WHERE u.shortCode = :shortCode
 
     Optional<UrlMapping> findByIdAndUser(Long id, User user);
 
-
+    List<UrlMapping> findByExpiresAtBefore(LocalDateTime time);
+    void deleteByExpiresAtBefore(LocalDateTime time);
 }

@@ -17,9 +17,18 @@ public class UrlMapping {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String  originalUrl;
-    private String  shortCode;
+
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String originalUrl;
+
+    @Column(nullable = false, unique = true)
+    private String shortCode;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime expiresAt;
 
 
     @OneToMany(mappedBy = "urlMapping")
@@ -27,4 +36,6 @@ public class UrlMapping {
 
     @Column(nullable = false)
     private Long totalClicks = 0L;
+
+
 }

@@ -51,13 +51,14 @@ public class UrlController {
             summary = "Create Short URL",
             description = "Creates a short URL from a long URL"
     )
- @PostMapping("/shorten")
- public ResponseEntity<String>  createUrl (@Valid @RequestBody CreateUrlRequest request) {
-    String shortcode = urlService.createShortUrl(request.getOriginalUrl());
-  return  ResponseEntity
-          .status(HttpStatus.CREATED)
-          .body(shortcode);
- }
+    @PostMapping("/shorten")
+    public ResponseEntity<String> createShortUrl(
+            @Valid @RequestBody CreateUrlRequest request) {
+
+        String shortCode = urlService.createShortUrl(request);
+
+        return ResponseEntity.ok(shortCode);
+    }
 
 
     @Operation(

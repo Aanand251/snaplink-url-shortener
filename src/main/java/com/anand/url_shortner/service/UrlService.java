@@ -1,5 +1,6 @@
 package com.anand.url_shortner.service;
 
+import com.anand.url_shortner.dto.CreateUrlRequest;
 import com.anand.url_shortner.dto.UpdateUrlRequest;
 import com.anand.url_shortner.dto.UrlResponse;
 import com.anand.url_shortner.entity.UrlMapping;
@@ -36,9 +37,12 @@ public class  UrlService {
 
 
 // creating short url;
-public String createShortUrl(String originalUrl) {
+public String createShortUrl(CreateUrlRequest request) {
 
-    if (originalUrl == null || originalUrl.isBlank()) {
+    if (request == null ||
+            request.getOriginalUrl() == null ||
+            request.getOriginalUrl().isBlank()) {
+
         throw new IllegalArgumentException("Original URL cannot be empty");
     }
 
@@ -51,14 +55,15 @@ public String createShortUrl(String originalUrl) {
     User currentUser = userService.getCurrentUser();
 
     UrlMapping urlMapping = new UrlMapping();
-    urlMapping.setOriginalUrl(originalUrl);
+    urlMapping.setOriginalUrl(request.getOriginalUrl());
     urlMapping.setShortCode(shortCode);
     urlMapping.setCreatedAt(LocalDateTime.now());
+    urlMapping.setExpiresAt(request.getExpiresAt());
     urlMapping.setUser(currentUser);
 
     urlRepository.save(urlMapping);
 
-    log.info("Short URL created: {}", shortCode);
+    log.info("Short URL created successfully. ShortCode: {}", shortCode);
 
     return shortCode;
 }

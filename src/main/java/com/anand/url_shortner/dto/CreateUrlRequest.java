@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +20,6 @@ public class CreateUrlRequest {
             message = "Invalid URL format"
     )
     private String originalUrl;
+
+    private LocalDateTime expiresAt;
 }
