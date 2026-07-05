@@ -17,7 +17,7 @@ public class RedirectController {
     private final RedirectService redirectService;
     private final ClickTrackingService clickTrackingService;
 
-    @GetMapping("/{shortCode}")
+    @GetMapping("/r/{shortCode}")
     public ResponseEntity<Void> redirect(
             @PathVariable String shortCode,
             @RequestHeader(value = "User-Agent", required = false) String userAgent,

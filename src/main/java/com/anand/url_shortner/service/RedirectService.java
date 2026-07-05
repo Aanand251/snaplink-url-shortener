@@ -1,6 +1,7 @@
 package com.anand.url_shortner.service;
 
 import com.anand.url_shortner.entity.UrlMapping;
+import com.anand.url_shortner.exception.UrlExpiredException;
 import com.anand.url_shortner.exception.UrlNotFoundException;
 import com.anand.url_shortner.repository.UrlRepository;
 import com.anand.url_shortner.util.CacheKeys;
@@ -22,8 +23,6 @@ public class RedirectService {
 
     public String getOriginalUrl(String shortCode) {
 
-
-
         if (shortCode == null || shortCode.isBlank()) {
             return null;
         }
@@ -42,7 +41,16 @@ public class RedirectService {
         UrlMapping urlMapping = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
 
-        // 3. Save into Redis
+        // 3. Check Expiry
+        if (urlMapping.getExpiresAt() != null &&
+                urlMapping.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
+
+            redisService.delete(cacheKey);
+
+            throw new UrlExpiredException(shortCode);
+        }
+
+        // 4. Save into Redis
         redisService.save(
                 cacheKey,
                 urlMapping.getOriginalUrl(),

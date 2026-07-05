@@ -5,7 +5,6 @@ import com.anand.url_shortner.dto.UpdateUrlRequest;
 import com.anand.url_shortner.dto.UrlResponse;
 import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.entity.User;
-import com.anand.url_shortner.exception.UrlNotFoundException;
 import com.anand.url_shortner.repository.UrlRepository;
 import com.anand.url_shortner.util.CacheKeys;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
+import java.security.SecureRandom;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+
 
 
 
@@ -46,15 +45,39 @@ public String createShortUrl(CreateUrlRequest request) {
         throw new IllegalArgumentException("Original URL cannot be empty");
     }
 
-    String shortCode = generateShortCode();
+    if (request.getExpiresAt() != null &&
+            request.getExpiresAt().isBefore(LocalDateTime.now())) {
 
-    while (urlRepository.findByShortCode(shortCode).isPresent()) {
-        shortCode = generateShortCode();
+        throw new IllegalArgumentException(
+                "Expiry time must be in the future."
+        );
+    }
+
+    String shortCode;
+
+    // Custom Alias
+    if (request.getCustomAlias() != null &&
+            !request.getCustomAlias().isBlank()) {
+
+        shortCode = request.getCustomAlias();
+
+        if (urlRepository.findByShortCode(shortCode).isPresent()) {
+            throw new IllegalArgumentException(
+                    "Custom alias already exists."
+            );
+        }
+
+    } else {
+
+        do {
+            shortCode = generateShortCode();
+        } while (urlRepository.findByShortCode(shortCode).isPresent());
     }
 
     User currentUser = userService.getCurrentUser();
 
     UrlMapping urlMapping = new UrlMapping();
+
     urlMapping.setOriginalUrl(request.getOriginalUrl());
     urlMapping.setShortCode(shortCode);
     urlMapping.setCreatedAt(LocalDateTime.now());
@@ -73,22 +96,32 @@ public String createShortUrl(CreateUrlRequest request) {
 
 
 // generate 4 random characters
+private static final String CHARACTERS =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private String generateShortCode() {
-    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder shortcode = new StringBuilder();
-        Random rand = new Random();
+
+        StringBuilder shortCode = new StringBuilder(4);
+
         for (int i = 0; i < 4; i++) {
-            int index = rand.nextInt(characters.length());
-            shortcode.append(characters.charAt(index));
-
+            shortCode.append(
+                    CHARACTERS.charAt(
+                            RANDOM.nextInt(CHARACTERS.length())
+                    )
+            );
         }
-        return shortcode.toString();
-    }
-public List<UrlMapping> getAllUrls() {
-    log.info("Fetching all URLs");
-        return urlRepository.findAll();
-}
 
+        return shortCode.toString();
+    }
+
+
+    public List<UrlMapping> getAllUrls() {
+        log.info("Fetching all URLs");
+
+        return urlRepository.findAll();
+    }
 //GETURLLIST
     public List<UrlResponse> getMyUrls() {
         User currentUser = userService.getCurrentUser();

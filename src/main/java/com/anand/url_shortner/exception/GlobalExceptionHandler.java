@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Objects;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -13,8 +15,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse>
     handleValidation(MethodArgumentNotValidException ex) {
 
-        String message = ex.getBindingResult()
-                .getFieldError()
+        String message = Objects.requireNonNull(ex.getBindingResult()
+                        .getFieldError())
                 .getDefaultMessage();
 
         ErrorResponse errorResponse =
@@ -57,4 +59,36 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(UrlExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleUrlExpired(
+            UrlExpiredException ex) {
+
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        HttpStatus.GONE.value(),
+                        ex.getMessage()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException ex) {
+
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
+    }
+
+
 }
