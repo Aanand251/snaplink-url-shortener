@@ -14,6 +14,24 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+
+        env:
+          POSTGRES_DB: url_shortner
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 9801
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -30,3 +48,7 @@ jobs:
 
       - name: Build and Run Tests
         run: ./mvnw clean verify
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/url_shortner
+          DB_USERNAME: postgres
+          DB_PASSWORD: 9801
