@@ -1,11 +1,15 @@
 package com.anand.url_shortner.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public  class LoginResponse {
+public class LoginResponse {
 
     private boolean success;
 

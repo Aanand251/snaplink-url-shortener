@@ -2,6 +2,7 @@ package com.anand.url_shortner.service;
 
 import com.anand.url_shortner.dto.RegisterRequest;
 import com.anand.url_shortner.dto.RegisterResponse;
+import com.anand.url_shortner.entity.Role;
 import com.anand.url_shortner.entity.UrlMapping;
 import com.anand.url_shortner.entity.User;
 import com.anand.url_shortner.repository.UrlRepository;
@@ -36,6 +37,7 @@ public class UserService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(encodedPassword)
+                .role(Role.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
 

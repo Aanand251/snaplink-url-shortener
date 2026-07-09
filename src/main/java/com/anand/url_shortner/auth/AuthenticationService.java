@@ -35,7 +35,7 @@ public class AuthenticationService {
 
         return new LoginResponse(
                 true,
-                "Login Sucessfull",
+                "Login Successful",
                 token
         );
 }
