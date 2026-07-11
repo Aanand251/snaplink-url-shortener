@@ -21,7 +21,7 @@ jobs:
         env:
           POSTGRES_DB: url_shortner
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 9801
+          POSTGRES_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
 
         ports:
           - 5432:5432
@@ -46,9 +46,9 @@ jobs:
       - name: Give execute permission to Maven Wrapper
         run: chmod +x mvnw
 
-      - name: Build and Run Tests
+      - name: Build, Test and Verify Coverage
         run: ./mvnw clean verify
         env:
           DB_URL: jdbc:postgresql://localhost:5432/url_shortner
           DB_USERNAME: postgres
-          DB_PASSWORD: 9801
+          DB_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}

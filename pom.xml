@@ -143,6 +143,8 @@
 	<build>
 		<plugins>
 
+			<!-- Spring Boot -->
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -157,6 +159,8 @@
 				</configuration>
 
 			</plugin>
+
+			<!-- Maven Compiler -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -173,6 +177,8 @@
 
 			</plugin>
 
+			<!-- JaCoCo Code Coverage -->
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -181,6 +187,8 @@
 				<executions>
 
 					<execution>
+						<id>prepare-agent</id>
+
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
@@ -194,6 +202,43 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+					</execution>
+
+					<execution>
+						<id>coverage-check</id>
+
+						<phase>verify</phase>
+
+						<goals>
+							<goal>check</goal>
+						</goals>
+
+						<configuration>
+							<rules>
+
+								<rule>
+									<element>BUNDLE</element>
+
+									<limits>
+
+										<limit>
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.85</minimum>
+										</limit>
+
+										<limit>
+											<counter>BRANCH</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.75</minimum>
+										</limit>
+
+									</limits>
+
+								</rule>
+
+							</rules>
+						</configuration>
 
 					</execution>
 
