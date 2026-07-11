@@ -52,3 +52,6 @@ jobs:
           DB_URL: jdbc:postgresql://localhost:5432/url_shortner
           DB_USERNAME: postgres
           DB_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
+          ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
