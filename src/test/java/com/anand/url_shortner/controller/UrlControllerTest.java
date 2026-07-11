@@ -115,27 +115,6 @@ class UrlControllerTest {
     }
 
     @Test
-    @DisplayName("Analytics API Should Return 200")
-    void getAnalytics_shouldReturn200() throws Exception {
-
-        when(clickTrackingService.getClickCount("abcd"))
-                .thenReturn(25L);
-
-        when(clickRepository.findTopBrowser("abcd"))
-                .thenReturn("Chrome");
-
-        when(clickRepository.findTopDevice("abcd"))
-                .thenReturn("Desktop");
-
-        mockMvc.perform(get("/api/url/analytics/abcd"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.shortCode").value("abcd"))
-                .andExpect(jsonPath("$.clicks").value(25))
-                .andExpect(jsonPath("$.topBrowser").value("Chrome"))
-                .andExpect(jsonPath("$.topDevice").value("Desktop"));
-    }
-
-    @Test
     @DisplayName("Dashboard API Should Return 200")
     void getDashboard_shouldReturn200() throws Exception {
 

@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
@@ -39,6 +41,15 @@ class AnalyticsServiceTest {
     @DisplayName("Should Return Analytics For Short Code")
     void getAnalytics_shouldReturnAnalytics() {
 
+        LocalDateTime lastClickedAt =
+                LocalDateTime.of(
+                        2026,
+                        7,
+                        12,
+                        1,
+                        45
+                );
+
         when(clickTrackingService.getClickCount(shortCode))
                 .thenReturn(25L);
 
@@ -47,6 +58,12 @@ class AnalyticsServiceTest {
 
         when(clickRepository.findTopDevice(shortCode))
                 .thenReturn("Desktop");
+
+        when(clickRepository.findTopCountry(shortCode))
+                .thenReturn("India");
+
+        when(clickRepository.findLastClickedAt(shortCode))
+                .thenReturn(lastClickedAt);
 
         AnalyticsResponse response =
                 analyticsService.getAnalytics(shortCode);
@@ -71,6 +88,16 @@ class AnalyticsServiceTest {
                 response.getTopDevice()
         );
 
+        assertEquals(
+                "India",
+                response.getTopCountry()
+        );
+
+        assertEquals(
+                lastClickedAt,
+                response.getLastClickedAt()
+        );
+
         verify(clickTrackingService)
                 .getClickCount(shortCode);
 
@@ -79,6 +106,12 @@ class AnalyticsServiceTest {
 
         verify(clickRepository)
                 .findTopDevice(shortCode);
+
+        verify(clickRepository)
+                .findTopCountry(shortCode);
+
+        verify(clickRepository)
+                .findLastClickedAt(shortCode);
     }
 
     @Test
@@ -92,6 +125,12 @@ class AnalyticsServiceTest {
                 .thenReturn(null);
 
         when(clickRepository.findTopDevice(shortCode))
+                .thenReturn(null);
+
+        when(clickRepository.findTopCountry(shortCode))
+                .thenReturn(null);
+
+        when(clickRepository.findLastClickedAt(shortCode))
                 .thenReturn(null);
 
         AnalyticsResponse response =
@@ -111,6 +150,10 @@ class AnalyticsServiceTest {
 
         assertNull(response.getTopDevice());
 
+        assertNull(response.getTopCountry());
+
+        assertNull(response.getLastClickedAt());
+
         verify(clickTrackingService)
                 .getClickCount(shortCode);
 
@@ -119,5 +162,11 @@ class AnalyticsServiceTest {
 
         verify(clickRepository)
                 .findTopDevice(shortCode);
+
+        verify(clickRepository)
+                .findTopCountry(shortCode);
+
+        verify(clickRepository)
+                .findLastClickedAt(shortCode);
     }
 }
