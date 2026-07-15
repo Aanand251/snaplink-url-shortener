@@ -9,6 +9,7 @@ import {
     Trophy,
     Pencil,
     Trash2,
+    ChartColumn,
 } from "lucide-react";
 import {
     Bar,
@@ -25,6 +26,7 @@ import {
     getMyUrls,
     getUrlDashboard,
 } from "../api/urlApi";
+import { useNavigate } from "react-router-dom";
 import CreateLinkModal from "../components/dashboard/CreateLinkModal";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import StatCard from "../components/dashboard/StatCard";
@@ -32,6 +34,7 @@ import DeleteLinkModal from "../components/dashboard/DeleteLinkModal";
 import EditLinkModal from "../components/dashboard/EditLinkModal";
 
 function DashboardPage() {
+    const navigate = useNavigate();
     const [links, setLinks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -509,6 +512,17 @@ function DashboardPage() {
                                             )}
                                         </button>
 
+                                        <button
+                                            type="button"
+                                            className="dashboard-link-action"
+                                            onClick={() =>
+                                                navigate(`/analytics/${link.shortCode}`)
+                                            }
+                                            aria-label={`Analytics ${link.shortCode}`}
+                                            title="View Analytics"
+                                        >
+                                            <ChartColumn size={17} />
+                                        </button>
                                         <a
                                             href={`${import.meta.env.VITE_API_BASE_URL}/r/${link.shortCode}`}
                                             target="_blank"
