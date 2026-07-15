@@ -5,38 +5,68 @@ import {
     useMemo,
     useState,
 } from "react";
+
 import apiClient from "../api/apiClient";
+import { isTokenUsable } from "../utils/jwtUtils";
 
 const AuthContext = createContext(null);
 
+function getStoredToken() {
+    const storedToken = localStorage.getItem("snaplink_token");
+
+    if (!isTokenUsable(storedToken)) {
+        localStorage.removeItem("snaplink_token");
+        return null;
+    }
+
+    return storedToken;
+}
+
 export function AuthProvider({ children }) {
-    const [token, setToken] = useState(() =>
-        localStorage.getItem("snaplink_token"),
-    );
+    const [token, setToken] = useState(getStoredToken);
 
     const login = useCallback(async (email, password) => {
-        const response = await apiClient.post("/api/auth/login", {
-            email,
-            password,
-        });
+        const response = await apiClient.post(
+            "/api/auth/login",
+            {
+                email,
+                password,
+            },
+        );
 
         const authToken = response.data.token;
 
-        localStorage.setItem("snaplink_token", authToken);
+        if (!isTokenUsable(authToken)) {
+            throw new Error(
+                "Authentication server returned an invalid token.",
+            );
+        }
+
+        localStorage.setItem(
+            "snaplink_token",
+            authToken,
+        );
+
         setToken(authToken);
 
         return response.data;
     }, []);
 
-    const register = useCallback(async (name, email, password) => {
-        const response = await apiClient.post("/api/auth/register", {
-            name,
-            email,
-            password,
-        });
+    const register = useCallback(
+        async (name, email, password) => {
+            const response = await apiClient.post(
+                "/api/auth/register",
+                {
+                    name,
+                    email,
+                    password,
+                },
+            );
 
-        return response.data;
-    }, []);
+            return response.data;
+        },
+        [],
+    );
 
     const logout = useCallback(() => {
         localStorage.removeItem("snaplink_token");
@@ -46,7 +76,7 @@ export function AuthProvider({ children }) {
     const value = useMemo(
         () => ({
             token,
-            isAuthenticated: Boolean(token),
+            isAuthenticated: isTokenUsable(token),
             login,
             register,
             logout,
@@ -54,14 +84,20 @@ export function AuthProvider({ children }) {
         [token, login, register, logout],
     );
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export function useAuth() {
     const context = useContext(AuthContext);
 
     if (!context) {
-        throw new Error("useAuth must be used inside AuthProvider");
+        throw new Error(
+            "useAuth must be used inside AuthProvider",
+        );
     }
 
     return context;

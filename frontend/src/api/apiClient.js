@@ -1,5 +1,9 @@
 import axios from "axios";
 
+import { isTokenUsable } from "../utils/jwtUtils";
+
+const TOKEN_KEY = "snaplink_token";
+
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
@@ -8,12 +12,39 @@ const apiClient = axios.create({
     timeout: 10000,
 });
 
+function clearSession() {
+    localStorage.removeItem(TOKEN_KEY);
+}
+
+function redirectToLogin() {
+    const currentPath = window.location.pathname;
+
+    if (
+        currentPath !== "/login" &&
+        currentPath !== "/register"
+    ) {
+        window.location.replace("/login");
+    }
+}
+
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("snaplink_token");
+        const token = localStorage.getItem(TOKEN_KEY);
+
+        if (token && !isTokenUsable(token)) {
+            clearSession();
+            redirectToLogin();
+
+            return Promise.reject(
+                new axios.Cancel(
+                    "Authentication token expired.",
+                ),
+            );
+        }
 
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers.Authorization =
+                `Bearer ${token}`;
         }
 
         return config;
@@ -24,15 +55,11 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem("snaplink_token");
+        const status = error.response?.status;
 
-            if (
-                window.location.pathname !== "/login" &&
-                window.location.pathname !== "/register"
-            ) {
-                window.location.href = "/login";
-            }
+        if (status === 401) {
+            clearSession();
+            redirectToLogin();
         }
 
         return Promise.reject(error);
