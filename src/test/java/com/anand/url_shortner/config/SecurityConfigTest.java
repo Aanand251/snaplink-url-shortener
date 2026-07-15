@@ -6,12 +6,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class SecurityConfigTest {
@@ -32,6 +31,12 @@ class SecurityConfigTest {
                         jwtFilter,
                         rateLimitFilter
                 );
+
+        ReflectionTestUtils.setField(
+                securityConfig,
+                "allowedOrigins",
+                "http://localhost:5173"
+        );
     }
 
     @Test
@@ -147,11 +152,7 @@ class SecurityConfigTest {
 
         assertNotNull(configuration);
 
-        assertTrue(
-                Boolean.TRUE.equals(
-                        configuration.getAllowCredentials()
-                )
-        );
+        assertEquals(Boolean.TRUE, configuration.getAllowCredentials());
     }
 
     private CorsConfiguration getCorsConfiguration() {

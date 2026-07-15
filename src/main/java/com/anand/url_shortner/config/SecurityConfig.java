@@ -4,6 +4,7 @@ import com.anand.url_shortner.auth.CustomUserDetailsService;
 import com.anand.url_shortner.auth.JwtFilter;
 import com.anand.url_shortner.filter.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -28,6 +30,9 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final RateLimitFilter rateLimitFilter;
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -38,7 +43,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .cors(cors ->
-                        cors.configurationSource(corsConfigurationSource())
+                        cors.configurationSource(
+                                corsConfigurationSource()
+                        )
                 )
 
                 .sessionManagement(session ->
@@ -94,9 +101,14 @@ public class SecurityConfig {
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
-        );
+        List<String> origins = Arrays.stream(
+                        allowedOrigins.split(",")
+                )
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toList();
+
+        configuration.setAllowedOrigins(origins);
 
         configuration.setAllowedMethods(
                 List.of(
@@ -136,10 +148,16 @@ public class SecurityConfig {
     ) {
 
         DaoAuthenticationProvider authenticationProvider =
-                new DaoAuthenticationProvider(userDetailsService);
+                new DaoAuthenticationProvider(
+                        userDetailsService
+                );
 
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        authenticationProvider.setPasswordEncoder(
+                passwordEncoder
+        );
 
-        return new ProviderManager(authenticationProvider);
+        return new ProviderManager(
+                authenticationProvider
+        );
     }
 }

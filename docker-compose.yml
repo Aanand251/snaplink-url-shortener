@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   postgres:
@@ -7,9 +5,9 @@ services:
     container_name: postgres-url-shortener
     restart: always
     environment:
-      POSTGRES_DB: url_shortner
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 9801
+      POSTGRES_DB: ${POSTGRES_DB:-url_shortner}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-9801}
     ports:
       - "5432:5432"
     volumes:
@@ -32,11 +30,23 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/url_shortner
-      DB_USERNAME: postgres
-      DB_PASSWORD: 9801
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-url_shortner}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-9801}
+
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+
+      JWT_SECRET: ${JWT_SECRET}
+
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+
+      ADMIN_ENABLED: ${ADMIN_ENABLED:-true}
+      ADMIN_NAME: ${ADMIN_NAME}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+      GEO_API_URL: ${GEO_API_URL:-http://ip-api.com/json/}
 
 volumes:
   postgres_data:
