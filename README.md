@@ -1,251 +1,332 @@
-# 🚀 SnapLink - Smart URL Shortener with Analytics
+# 🚀 SnapLink
 
 <p align="center">
-  <b>A production-ready URL shortening platform built with Spring Boot and PostgreSQL.</b>
+
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-brightgreen?style=for-the-badge)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?style=for-the-badge)
+![Redis](https://img.shields.io/badge/Redis-7-red?style=for-the-badge)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)
+
 </p>
 
-<p align="center">
-  URL Shortening • Analytics • Validation • Swagger • Exception Handling • JPA Relationships
-</p>
+---
+
+## 📖 About
+
+SnapLink is a **production-ready URL Shortener** built using **Spring Boot**, **React**, **PostgreSQL**, and **Redis**.
+
+The project focuses on building a scalable backend rather than just shortening URLs. It implements authentication, analytics, caching, asynchronous processing, scheduled synchronization, Dockerized deployment, and CI/CD practices similar to modern production systems.
 
 ---
 
-## 📖 Overview
+# ✨ Features
 
-SnapLink is a backend-focused URL shortening platform that allows users to generate short URLs, redirect to original URLs, and track click analytics.
+## 🔐 Authentication & Security
 
-The project was built to demonstrate real-world backend development concepts such as layered architecture, database relationships, validation, exception handling, API documentation, and analytics tracking.
-
----
-
-## ✨ Features
-
-| Feature                   | Status     |
-| ------------------------- | ---------- |
-| URL Shortening            | ✅          |
-| URL Redirection           | ✅          |
-| Click Tracking            | ✅          |
-| Analytics API             | ✅          |
-| DTO Validation            | ✅          |
-| Global Exception Handling | ✅          |
-| Swagger Documentation     | ✅          |
-| PostgreSQL Integration    | ✅          |
-| JPA Relationships         | ✅          |
-| Logging                   | ✅          |
-| Redis Caching             | 🚧 Planned |
-| Rate Limiting             | 🚧 Planned |
-| Docker Support            | 🚧 Planned |
+- JWT Authentication
+- BCrypt Password Encryption
+- Spring Security
+- Protected REST APIs
+- Ownership Validation
+- Role-based Authorization
 
 ---
 
-## 🏗️ Architecture
+## 🔗 URL Management
+
+- Create Short URLs
+- Custom Aliases
+- Reserved Alias Validation
+- URL Expiration
+- Update URL
+- Delete URL
+- User Dashboard
+
+---
+
+## 📊 Analytics
+
+- Total Click Tracking
+- Browser Analytics
+- Device Analytics
+- Country Analytics
+- Last Click Timestamp
+- Live Analytics Dashboard
+
+---
+
+## ⚡ Performance
+
+- Redis URL Cache
+- Redis Click Counter
+- Asynchronous Click Tracking
+- Scheduled Click Synchronization
+- Optimized Database Queries
+
+---
+
+## 🚀 DevOps
+
+- Docker
+- Docker Compose
+- Flyway
+- GitHub Actions
+- Render Deployment
+- Vercel Deployment
+
+---
+
+# 🏗 Tech Stack
+
+## Backend
+
+- Java 21
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- JWT
+- PostgreSQL
+- Redis
+- Flyway
+- Maven
+
+---
+
+## Frontend
+
+- React
+- Vite
+- Tailwind CSS
+- Axios
+- React Router
+
+---
+
+## DevOps
+
+- Docker
+- Docker Compose
+- GitHub Actions
+- Render
+- Vercel
+
+---
+
+# 📐 High Level Architecture
+
+```text
+                    User
+                      │
+                      ▼
+          React Frontend (Vercel)
+                      │
+               HTTPS REST API
+                      │
+                      ▼
+             Spring Boot Backend
+                      │
+      ┌───────────────┴───────────────┐
+      │                               │
+      ▼                               ▼
+ PostgreSQL                     Redis Cache
+      │                               │
+      └───────────────┬───────────────┘
+                      ▼
+           Click Synchronization
+              Scheduled Job
+```
+
+---
+
+# 🔄 URL Creation Flow
 
 ```text
 Client
+
    │
-   ▼
-Controller Layer
+
+POST /api/url/shorten
+
    │
-   ▼
-Service Layer
+
+Controller
+
    │
-   ▼
-Repository Layer
+
+Service
+
    │
-   ▼
-PostgreSQL Database
+
+Generate Short Code
+
+   │
+
+Persist URL
+
+   │
+
+PostgreSQL
 ```
 
 ---
 
-## 📂 Project Structure
+# ⚡ Redirect Flow
 
 ```text
-src/main/java/com/anand/url_shortner
+Client
 
-├── config
+   │
+
+GET /{shortCode}
+
+   │
+
+Redis Cache
+
+   │
+
+Cache Hit?
+
+┌────────────┴────────────┐
+│                         │
+▼                         ▼
+
+YES                      NO
+
+│                         │
+
+Redirect            PostgreSQL
+
+                         │
+
+                 Store in Redis
+
+                         │
+
+                   Redirect User
+```
+
+---
+
+# 📈 Analytics Flow
+
+```text
+User Click
+
+    │
+
+Redirect Request
+
+    │
+
+Async Click Tracker
+
+    │
+
+Redis Counter
+
+    │
+
+Every 60 Seconds
+
+    │
+
+Scheduler
+
+    │
+
+PostgreSQL
+```
+
+---
+
+# 📂 Project Structure
+
+```text
+SnapLink
+
+backend
+│
 ├── controller
+├── service
+├── repository
+├── security
+├── config
 ├── dto
 ├── entity
-├── exception
-├── repository
-├── service
-└── UrlShortnerApplication
+├── scheduler
+└── util
+
+frontend
+│
+├── api
+├── components
+├── context
+├── layouts
+├── pages
+├── routes
+└── hooks
 ```
 
 ---
 
-## 🛠️ Tech Stack
+# 🔌 REST APIs
 
-| Category      | Technology        |
-| ------------- | ----------------- |
-| Language      | Java 21           |
-| Framework     | Spring Boot       |
-| Database      | PostgreSQL        |
-| ORM           | Spring Data JPA   |
-| Documentation | Swagger / OpenAPI |
-| Build Tool    | Maven             |
-| Utilities     | Lombok            |
-| API Testing   | Postman           |
-
----
-
-## 📊 Database Design
-
-### URL Mapping
-
-| Field       | Type   |
-| ----------- | ------ |
-| id          | Long   |
-| originalUrl | String |
-| shortCode   | String |
-| createdAt   | Date   |
-
-### Click Event
-
-| Field     | Type   |
-| --------- | ------ |
-| id        | Long   |
-| clickedAt | Date   |
-| device    | String |
-| browser   | String |
-| country   | String |
-
-### Relationship
-
-```text
-UrlMapping (1)
-      │
-      ▼
-ClickEvent (Many)
-```
-
-Implemented using:
-
-Implemented using:
-
-Implemented using:
-
-- @OneToMany
-- @ManyToOne
-- @JoinColumn
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/auth/register` | Register User |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/url/shorten` | Create Short URL |
+| GET | `/api/url/myurls` | User URLs |
+| GET | `/api/url/analytics/{shortCode}` | URL Analytics |
+| PUT | `/api/url/{id}` | Update URL |
+| DELETE | `/api/url/{id}` | Delete URL |
 
 ---
 
-## 🔌 API Endpoints
+# 🌍 Deployment
 
-### Create Short URL
-
-```http
-POST /api/url/shorten
-```
-
-Request:
-
-```json
-{
-  "originalUrl": "https://youtube.com"
-}
-```
+| Component | Platform |
+|------------|----------|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | PostgreSQL |
+| Cache | Redis |
+| CI | GitHub Actions |
 
 ---
 
-### Get All URLs
+# 📌 Future Improvements
 
-```http
-GET /api/url
-```
-
----
-
-### Get Analytics
-
-```http
-GET /api/url/analytics/{shortCode}
-```
-
----
-
-### Redirect URL
-
-```http
-GET /{shortCode}
-```
+- Apache Kafka Event Streaming
+- QR Code Generation
+- Password Protected Links
+- Custom Domains
+- Team Workspaces
+- Webhooks
+- Real-time Analytics
+- Monitoring & Metrics
+- OpenTelemetry
+- Prometheus + Grafana
 
 ---
 
-## 📚 Swagger Documentation
+# 📜 License
 
-Run the application and open:
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-Swagger provides interactive API testing and documentation.
+Licensed under the MIT License.
 
 ---
 
-## ⚙️ Local Setup
+# 👨‍💻 Author
 
-### Clone Repository
+### Anand Choudhary
 
-```bash
-git clone https://github.com/Aanand251/snaplink-url-shortener.git
-```
-
-### Navigate
-
-```bash
-cd snaplink-url-shortener
-```
-
-### Configure PostgreSQL
-
-Update:
-
-```properties
-application.properties
-```
-
-with your database credentials.
-
-### Run Application
-
-```bash
-mvn spring-boot:run
-```
+- GitHub: https://github.com/Aanand251
+- LinkedIn: https://www.linkedin.com/in/anand-choudhary251/
 
 ---
 
-## 🚀 Future Enhancements
-
-* Redis Caching
-* Rate Limiting
-* Docker Containerization
-* Custom Alias URLs
-* QR Code Generation
-* Expiring Links
-* User Authentication (JWT)
-
----
-
-## 👨‍💻 Author
-
-**Aanand Kumar**
-
-* GitHub: https://github.com/Aanand251
-* Backend Development | Spring Boot | Java
-
----
-
-## ⭐ Project Goal
-
-This project is being developed as a production-oriented backend application to strengthen expertise in:
-
-* Spring Boot
-* REST APIs
-* PostgreSQL
-* Database Design
-* System Design Fundamentals
-* Scalable Backend Development
+## ⭐ If you found this project useful, consider giving it a star!
