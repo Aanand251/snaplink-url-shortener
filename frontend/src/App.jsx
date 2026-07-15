@@ -1,57 +1,98 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import {
+    lazy,
+    Suspense,
+} from "react";
 
+import {
+    Navigate,
+    Route,
+    Routes,
+} from "react-router-dom";
+
+import LoadingSpinner from "./components/ui/LoadingSpinner";
 import AuthLayout from "./layouts/AuthLayout";
-import DashboardPage from "./pages/DashboardPage";
-import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
-
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+const LandingPage = lazy(
+    () => import("./pages/LandingPage"),
+);
+
+const LoginPage = lazy(
+    () => import("./pages/LoginPage"),
+);
+
+const RegisterPage = lazy(
+    () => import("./pages/RegisterPage"),
+);
+
+const DashboardPage = lazy(
+    () => import("./pages/DashboardPage"),
+);
+
+const AnalyticsPage = lazy(
+    () => import("./pages/AnalyticsPage"),
+);
+
+function RouteLoader() {
+    return (
+        <main
+            className="
+                flex
+                min-h-screen
+                items-center
+                justify-center
+                bg-[#09090B]
+            "
+        >
+            <LoadingSpinner />
+        </main>
+    );
+}
 
 function App() {
     return (
-        <Routes>
-
-            <Route
-                path="/"
-                element={<LandingPage />}
-            />
-
-            <Route element={<AuthLayout />}>
-
+        <Suspense fallback={<RouteLoader />}>
+            <Routes>
                 <Route
-                    path="/login"
-                    element={<LoginPage />}
+                    path="/"
+                    element={<LandingPage />}
                 />
 
+                <Route element={<AuthLayout />}>
+                    <Route
+                        path="/login"
+                        element={<LoginPage />}
+                    />
+
+                    <Route
+                        path="/register"
+                        element={<RegisterPage />}
+                    />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                    <Route
+                        path="/dashboard"
+                        element={<DashboardPage />}
+                    />
+
+                    <Route
+                        path="/analytics/:shortCode"
+                        element={<AnalyticsPage />}
+                    />
+                </Route>
+
                 <Route
-                    path="/register"
-                    element={<RegisterPage />}
+                    path="*"
+                    element={
+                        <Navigate
+                            to="/"
+                            replace
+                        />
+                    }
                 />
-
-            </Route>
-
-            <Route element={<ProtectedRoute />}>
-
-                <Route
-                    path="/dashboard"
-                    element={<DashboardPage />}
-                />
-
-                <Route
-                    path="/analytics/:shortCode"
-                    element={<AnalyticsPage />}
-                />
-
-            </Route>
-
-            <Route
-                path="*"
-                element={<Navigate to="/" replace />}
-            />
-
-        </Routes>
+            </Routes>
+        </Suspense>
     );
 }
 
