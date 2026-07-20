@@ -1,18 +1,59 @@
 import { Link2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import clsx from "clsx";
 
-function Logo({ compact = false }) {
+function Logo({ compact = false, className = "" }) {
     return (
-        <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-400/20 bg-violet-500/10 shadow-[0_0_30px_rgba(139,92,246,0.15)]">
-                <Link2 className="h-5 w-5 text-violet-300" strokeWidth={2.4} />
+        <Link
+            to="/"
+            className={clsx(
+                "group inline-flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02]",
+                className,
+            )}
+        >
+            {/* Logo Icon */}
+            <div
+                className="
+                    relative
+                    flex
+                    h-11
+                    w-11
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-cyan-400/20
+                    bg-white/5
+                    backdrop-blur-xl
+                    transition-all
+                    duration-300
+                    group-hover:border-cyan-300/40
+                    group-hover:shadow-[0_0_35px_rgba(34,211,238,0.22)]
+                "
+            >
+                {/* Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/15 via-transparent to-transparent" />
+
+                <Link2
+                    className="relative h-5 w-5 text-cyan-300"
+                    strokeWidth={2.5}
+                />
             </div>
 
             {!compact && (
-                <span className="text-xl font-semibold tracking-[-0.04em] text-white">
-          Snap<span className="text-violet-400">Link</span>
-        </span>
+                <div className="flex flex-col leading-none">
+                    <span className="text-xl font-semibold tracking-[-0.04em] text-white">
+                        Snap
+                        <span className="text-cyan-300">Link</span>
+                    </span>
+
+                    <span className="mt-1 text-[11px] uppercase tracking-[0.28em] text-zinc-500">
+                        URL SHORTENER
+                    </span>
+                </div>
             )}
-        </div>
+        </Link>
     );
 }
 
