@@ -1,14 +1,12 @@
-import {
-    ArrowRight,
-    Eye,
-    EyeOff,
-    LockKeyhole,
-    Mail,
-    UserRound,
-} from "lucide-react";
+import { ArrowRight, Mail, UserRound } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
+import AuthCard from "../components/auth/AuthCard";
+import AuthInput from "../components/auth/AuthInput";
+import PasswordInput from "../components/auth/PasswordInput";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Logo from "../components/ui/Logo";
 import { useAuth } from "../context/AuthContext";
 
 function RegisterPage() {
@@ -69,144 +67,143 @@ function RegisterPage() {
     };
 
     return (
-        <section className="w-full max-w-md">
-            <div className="mb-8 text-center">
-                <p className="text-sm font-medium text-violet-400">
-                    Create your workspace
-                </p>
+        <section className="w-full max-w-lg px-4">
+            <div className="mb-10 flex flex-col items-center text-center">
+                <Logo />
 
-                <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-white">
-                    Start with SnapLink
+                <span className="mt-8 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                    Create Account
+                </span>
+
+                <h1 className="mt-6 text-4xl font-bold tracking-[-0.05em] text-white sm:text-5xl">
+                    Join the
+                    <span className="block bg-gradient-to-r from-cyan-300 via-sky-300 to-white bg-clip-text text-transparent">
+                        SnapLink Platform
+                    </span>
                 </h1>
 
-                <p className="mt-3 text-zinc-500">
-                    Create, manage and understand every link.
+                <p className="mt-5 max-w-md text-sm leading-7 text-zinc-400">
+                    Create your account to shorten URLs, track analytics,
+                    and manage everything from one elegant dashboard.
                 </p>
             </div>
 
-            <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.035] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-8">
+            <AuthCard>
                 {error && (
                     <div
                         role="alert"
-                        className="mb-6 rounded-2xl border border-red-400/15 bg-red-500/10 px-4 py-3 text-sm leading-6 text-red-300"
+                        className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-300"
                     >
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="mb-2 block text-sm font-medium text-zinc-300"
-                        >
-                            Name
-                        </label>
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-6"
+                >
+                    <AuthInput
+                        id="name"
+                        name="name"
+                        label="Full Name"
+                        icon={UserRound}
+                        value={form.name}
+                        onChange={handleChange}
+                        placeholder="John Doe"
+                        autoComplete="name"
+                        required
+                    />
 
-                        <div className="relative">
-                            <UserRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600" />
+                    <AuthInput
+                        id="email"
+                        name="email"
+                        label="Email Address"
+                        type="email"
+                        icon={Mail}
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        required
+                    />
 
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                autoComplete="name"
-                                required
-                                value={form.name}
-                                onChange={handleChange}
-                                placeholder="Your name"
-                                className="h-13 w-full rounded-2xl border border-white/[0.08] bg-black/20 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-700 focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/10"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="mb-2 block text-sm font-medium text-zinc-300"
-                        >
-                            Email address
-                        </label>
-
-                        <div className="relative">
-                            <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600" />
-
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                value={form.email}
-                                onChange={handleChange}
-                                placeholder="you@example.com"
-                                className="h-13 w-full rounded-2xl border border-white/[0.08] bg-black/20 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-700 focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/10"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="mb-2 block text-sm font-medium text-zinc-300"
-                        >
-                            Password
-                        </label>
-
-                        <div className="relative">
-                            <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600" />
-
-                            <input
-                                id="password"
-                                name="password"
-                                type={showPassword ? "text" : "password"}
-                                autoComplete="new-password"
-                                required
-                                value={form.password}
-                                onChange={handleChange}
-                                placeholder="Create a password"
-                                className="h-13 w-full rounded-2xl border border-white/[0.08] bg-black/20 pl-11 pr-12 text-sm text-white outline-none transition placeholder:text-zinc-700 focus:border-violet-400/40 focus:ring-4 focus:ring-violet-500/10"
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword((current) => !current)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 transition hover:text-zinc-300"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? (
-                                    <EyeOff className="h-4 w-4" />
-                                ) : (
-                                    <Eye className="h-4 w-4" />
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                    <PasswordInput
+                        id="password"
+                        name="password"
+                        label="Password"
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="Create a secure password"
+                        autoComplete="new-password"
+                        required
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                    />
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-violet-500 px-5 text-sm font-semibold text-white shadow-[0_12px_35px_rgba(124,58,237,0.25)] transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="
+                            flex
+                            h-14
+                            w-full
+                            items-center
+                            justify-center
+                            gap-2
+                            rounded-2xl
+                            bg-cyan-400
+                            text-sm
+                            font-semibold
+                            text-slate-950
+                            transition-all
+                            duration-300
+                            hover:-translate-y-0.5
+                            hover:bg-cyan-300
+                            hover:shadow-[0_18px_40px_rgba(34,211,238,0.35)]
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
                     >
                         {loading ? (
                             <LoadingSpinner />
                         ) : (
                             <>
-                                Create account
+                                Create Account
                                 <ArrowRight className="h-4 w-4" />
                             </>
                         )}
                     </button>
                 </form>
 
-                <p className="mt-7 text-center text-sm text-zinc-500">
+                <div className="mt-8 flex items-center justify-center">
+                    <div className="h-px flex-1 bg-white/10" />
+                    <span className="px-4 text-xs uppercase tracking-[0.25em] text-zinc-500">
+                        Secure Registration
+                    </span>
+                    <div className="h-px flex-1 bg-white/10" />
+                </div>
+
+                <p className="mt-8 text-center text-sm text-zinc-400">
                     Already have an account?{" "}
                     <Link
                         to="/login"
-                        className="font-medium text-violet-400 transition hover:text-violet-300"
+                        className="
+                            font-semibold
+                            text-cyan-300
+                            transition-colors
+                            duration-300
+                            hover:text-cyan-200
+                        "
                     >
-                        Sign in
+                        Sign In
                     </Link>
+                </p>
+            </AuthCard>
+
+            <div className="mt-8 text-center">
+                <p className="text-xs leading-6 text-zinc-500">
+                    By creating an account, you agree to securely manage your
+                    links with SnapLink and enjoy fast, reliable URL shortening.
                 </p>
             </div>
         </section>
