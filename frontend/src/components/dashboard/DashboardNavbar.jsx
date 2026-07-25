@@ -21,6 +21,7 @@ function ProfileDropdown({
                              onProfile,
                              onSettings,
                              onLogout,
+                             user,
                          }) {
     if (!open) return null;
 
@@ -127,16 +128,16 @@ function ProfileDropdown({
                             text-white
                         "
                     >
-                        A
+                        {user?.name?.charAt(0).toUpperCase() || "U"}
                     </div>
 
                     <div>
                         <h3 className="font-bold text-slate-800">
-                            Anand
+                            {user?.name || "User"}
                         </h3>
 
                         <p className="text-sm text-slate-500">
-                            Premium User
+                            {user?.email || ""}
                         </p>
                     </div>
                 </div>
@@ -213,7 +214,7 @@ function DashboardNavbar({
                          }) {
     const navigate = useNavigate();
 
-    const { logout } = useAuth();
+    const { logout , user } = useAuth();
 
     const [dropdownOpen, setDropdownOpen] =
         useState(false);
@@ -489,16 +490,16 @@ function DashboardNavbar({
                                     text-white
                                 "
                             >
-                                A
+                                {user?.name?.charAt(0).toUpperCase() || "U"}
                             </div>
 
                             <div className="hidden lg:block text-left">
                                 <p className="font-semibold text-slate-800">
-                                    Anand
+                                    {user?.name || "User"}
                                 </p>
 
                                 <p className="text-xs text-slate-500">
-                                    Premium User
+                                    {user?.email || ""}
                                 </p>
                             </div>
 
@@ -535,6 +536,7 @@ function DashboardNavbar({
                                 navigate("/settings")
                             }
                             onLogout={handleLogout}
+                            user={user}
                         />
                     </div>
                 </div>

@@ -25,59 +25,41 @@ function LinkRow({
             className="
                 relative
                 overflow-hidden
-
                 rounded-[34px]
-
                 p-7
-
                 transition-all
                 duration-300
-
                 hover:-translate-y-1
                 hover:shadow-[14px_14px_34px_rgba(163,177,198,.22),-14px_-14px_34px_rgba(255,255,255,.95)]
             "
         >
-            {/* Decorative Blob */}
-
             <div
                 className="
                     absolute
-
                     -right-12
                     -top-12
-
                     h-36
                     w-36
-
                     rounded-full
-
                     bg-sky-100/70
-
                     blur-3xl
                 "
             />
 
             <div className="relative z-10">
-                {/* Top */}
-
+                {/* Header */}
                 <div className="flex items-start justify-between gap-5 flex-wrap">
                     <div className="flex items-start gap-5 min-w-0 flex-1">
                         <div
                             className="
                                 flex
-
                                 h-16
                                 w-16
-
                                 shrink-0
-
                                 items-center
                                 justify-center
-
                                 rounded-[22px]
-
                                 bg-sky-100
-
                                 shadow-[6px_6px_18px_rgba(163,177,198,.18),-6px_-6px_18px_rgba(255,255,255,.95)]
                             "
                         >
@@ -103,63 +85,60 @@ function LinkRow({
                             flex
                             items-center
                             gap-2
-
                             rounded-full
-
                             bg-sky-50
-
                             px-5
                             py-3
-
                             text-sm
                             font-semibold
-
                             text-sky-700
                         "
                     >
                         <MousePointerClick size={17} />
-
-                        {Number(
-                            link.totalClicks ?? 0
-                        ).toLocaleString()}{" "}
-                        Clicks
+                        {Number(link.totalClicks ?? 0).toLocaleString()} Clicks
                     </div>
                 </div>
-
-                {/* Divider */}
 
                 <div className="my-7 h-px bg-slate-100" />
 
                 {/* Actions */}
-
                 <div className="flex flex-wrap gap-3">
+
                     <ClayIconButton
                         onClick={() => onEdit(link)}
                         title="Edit"
+                        className="
+                            text-blue-500
+                            hover:text-blue-600
+                            hover:shadow-[0_0_24px_rgba(59,130,246,.45)]
+                        "
                     >
                         <Pencil size={18} />
                     </ClayIconButton>
 
                     <ClayIconButton
-                        onClick={() =>
-                            onAnalytics(link.shortCode)
-                        }
+                        onClick={() => onAnalytics(link.shortCode)}
                         title="Analytics"
+                        className="
+                            text-violet-500
+                            hover:text-violet-600
+                            hover:shadow-[0_0_24px_rgba(139,92,246,.45)]
+                        "
                     >
                         <ChartColumn size={18} />
                     </ClayIconButton>
 
                     <ClayIconButton
-                        onClick={() =>
-                            onCopy(link.shortCode)
-                        }
+                        onClick={() => onCopy(link.shortCode)}
                         title="Copy"
+                        className="
+                            text-emerald-500
+                            hover:text-emerald-600
+                            hover:shadow-[0_0_24px_rgba(16,185,129,.45)]
+                        "
                     >
                         {copied ? (
-                            <Check
-                                size={18}
-                                className="text-emerald-500"
-                            />
+                            <Check size={18} />
                         ) : (
                             <Copy size={18} />
                         )}
@@ -170,7 +149,14 @@ function LinkRow({
                         target="_blank"
                         rel="noreferrer"
                     >
-                        <ClayIconButton title="Open">
+                        <ClayIconButton
+                            title="Open"
+                            className="
+                                text-cyan-500
+                                hover:text-cyan-600
+                                hover:shadow-[0_0_24px_rgba(6,182,212,.45)]
+                            "
+                        >
                             <ExternalLink size={18} />
                         </ClayIconButton>
                     </a>
@@ -180,12 +166,13 @@ function LinkRow({
                         title="Delete"
                         className="
                             text-red-500
-
                             hover:text-red-600
+                            hover:shadow-[0_0_24px_rgba(239,68,68,.45)]
                         "
                     >
                         <Trash2 size={18} />
                     </ClayIconButton>
+
                 </div>
             </div>
         </ClayCard>

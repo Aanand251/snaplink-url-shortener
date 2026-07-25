@@ -1,158 +1,222 @@
 import { useEffect, useState } from "react";
-import { AlertCircle } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-import { getAnalytics } from "../api/analyticsApi";
+import {
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    XAxis,
+    Tooltip,
+} from "recharts";
+
+import { getAnalytics } from "../api/analyticsApi.js";
+
+import AnalyticsWorkspace from "../components/analytics/AnalyticsWorkspace";
 import AnalyticsHeader from "../components/analytics/AnalyticsHeader";
-import AnalyticsOverview from "../components/analytics/AnalyticsOverview";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
+import TrafficChartCard from "../components/analytics/TrafficChartCard";
+import PieChartCard from "../components/analytics/PieChartCard";
+import BrowserStatsCard from "../components/analytics/BrowserStatsCard";
+import RecentActivityCard from "../components/analytics/RecentActivityCard";
 
 function AnalyticsPage() {
+
     const { shortCode } = useParams();
 
     const [analytics, setAnalytics] = useState(null);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
 
     useEffect(() => {
-        let active = true;
 
         async function loadAnalytics() {
+
             try {
+
                 setLoading(true);
+
+                const response = await getAnalytics(shortCode);
+
+                setAnalytics(response);
+
                 setError("");
 
-                const data = await getAnalytics(shortCode);
-
-                if (active) {
-                    setAnalytics(data);
-                }
             } catch (err) {
-                console.error(
-                    "Failed to load link analytics:",
-                    err
-                );
 
-                if (active) {
-                    setError(
-                        err.response?.data?.message ||
-                        "Unable to load analytics."
-                    );
-                }
+                console.error(err);
+
+                setError("Unable to load analytics.");
+
             } finally {
-                if (active) {
-                    setLoading(false);
-                }
+
+                setLoading(false);
+
             }
+
         }
 
         loadAnalytics();
 
-        return () => {
-            active = false;
-        };
     }, [shortCode]);
 
     if (loading) {
-        return (
-            <main className="flex min-h-screen items-center justify-center bg-[#09090B]">
-                <LoadingSpinner />
-            </main>
-        );
-    }
 
-    if (error || !analytics) {
         return (
+
             <main
                 className="
-                    flex
                     min-h-screen
+                    flex
                     items-center
                     justify-center
-                    bg-[#09090B]
-                    px-6
+                    bg-[#ECEEEF]
                 "
             >
-                <div
+
+                <h2
                     className="
-                        max-w-md
-                        rounded-3xl
-                        border
-                        border-red-500/20
-                        bg-red-500/10
-                        p-8
-                        text-center
-                        backdrop-blur-xl
+                        text-2xl
+                        font-semibold
+                        text-[#64707C]
                     "
                 >
-                    <AlertCircle
-                        size={32}
-                        className="mx-auto text-red-400"
-                    />
+                    Loading Analytics...
+                </h2>
 
-                    <h1 className="mt-5 text-xl font-semibold text-white">
-                        Analytics unavailable
-                    </h1>
-
-                    <p className="mt-2 text-sm leading-6 text-zinc-400">
-                        {error ||
-                            "Analytics data could not be loaded."}
-                    </p>
-                </div>
             </main>
+
         );
+
+    }
+
+    if (error) {
+
+        return (
+
+            <main
+                className="
+                    min-h-screen
+                    flex
+                    items-center
+                    justify-center
+                    bg-[#ECEEEF]
+                "
+            >
+
+                <h2
+                    className="
+                        text-xl
+                        font-semibold
+                        text-red-500
+                    "
+                >
+                    {error}
+                </h2>
+
+            </main>
+
+        );
+
     }
 
     return (
+
         <main
             className="
-                relative
                 min-h-screen
-                overflow-hidden
-                bg-[#09090B]
-                text-white
+                bg-[#ECEEEF]
+                px-8
+                py-10
             "
         >
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    left-1/2
-                    top-0
-                    h-[500px]
-                    w-[900px]
-                    -translate-x-1/2
-                    rounded-full
-                    bg-violet-700/10
-                    blur-[140px]
-                "
-            />
 
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    -right-40
-                    top-1/3
-                    h-[450px]
-                    w-[450px]
-                    rounded-full
-                    bg-purple-900/10
-                    blur-[130px]
-                "
-            />
+            <AnalyticsWorkspace>
 
-            <div className="relative z-10 mx-auto max-w-[1500px] px-5 py-10 sm:px-8 lg:px-12">
-                <AnalyticsHeader
-                    shortCode={analytics.shortCode}
-                />
+                <AnalyticsHeader />
 
-                <AnalyticsOverview
-                    analytics={analytics}
-                />
-            </div>
+                <div
+                    className="
+                        mt-10
+                        grid
+                        gap-8
+                        xl:grid-cols-[2fr_1fr]
+                    "
+                >
+
+                    <TrafficChartCard
+                        totalClicks={analytics?.totalClicks ?? 0}
+                        todayClicks={analytics?.todayClicks ?? 0}
+                        growth="+0%"
+                    >
+
+                        <ResponsiveContainer
+                            width="100%"
+                            height="100%"
+                        >
+
+                            <AreaChart
+                                data={analytics?.dailyClicks ?? []}
+                            >
+
+                                <XAxis
+                                    dataKey="date"
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
+
+                                <Tooltip />
+
+                                <Area
+                                    type="monotone"
+                                    dataKey="clicks"
+                                    stroke="#64748B"
+                                    fill="#DCE4EB"
+                                    strokeWidth={3}
+                                />
+
+                            </AreaChart>
+
+                        </ResponsiveContainer>
+
+                    </TrafficChartCard>
+
+                    <PieChartCard
+                        totalVisitors={analytics?.totalClicks ?? 0}
+                        browserStats={analytics?.browserStats ?? []}
+                    />
+
+                </div>
+
+                <div
+                    className="
+                        mt-8
+                        grid
+                        gap-8
+                        lg:grid-cols-2
+                    "
+                >
+
+                    <BrowserStatsCard
+                        browserStats={
+                            analytics?.browserStats ?? []
+                        }
+                    />
+
+                    <RecentActivityCard
+                        activities={
+                            analytics?.recentActivities ?? []
+                        }
+                    />
+
+                </div>
+
+            </AnalyticsWorkspace>
+
         </main>
+
     );
+
 }
 
 export default AnalyticsPage;

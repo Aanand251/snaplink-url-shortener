@@ -1,6 +1,4 @@
 package com.anand.url_shortner.auth;
-
-import com.anand.url_shortner.entity.User;
 import com.anand.url_shortner.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

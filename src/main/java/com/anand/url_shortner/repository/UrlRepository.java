@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import com.anand.url_shortner.repository.projection.TopLinkProjection;
 
 
 public interface UrlRepository
@@ -37,4 +38,16 @@ WHERE u.shortCode = :shortCode
 
     List<UrlMapping> findByExpiresAtBefore(LocalDateTime time);
     void deleteByExpiresAtBefore(LocalDateTime time);
+
+    @Query("""
+SELECT
+u.shortCode AS shortCode,
+u.originalUrl AS originalUrl,
+u.totalClicks AS totalClicks
+FROM UrlMapping u
+WHERE u.user.id = :userId
+ORDER BY u.totalClicks DESC
+LIMIT 5
+""")
+    List<TopLinkProjection> findTopLinksByUser(Long userId);
 }

@@ -6,23 +6,34 @@ function LiveBadge() {
             className="
                 inline-flex
                 items-center
-                gap-2
+                gap-3
                 rounded-full
-                border
-                border-emerald-500/20
-                bg-emerald-500/10
-                px-4
-                py-2
+                px-5
+                py-3
+                bg-[#EEF2F5]
             "
+            style={{
+                boxShadow:
+                    "8px 8px 18px rgba(163,177,198,.20), -8px -8px 18px rgba(255,255,255,.95)"
+            }}
         >
-            <Activity
-                size={15}
-                className="text-emerald-400"
-            />
-
-            <span className="text-sm font-semibold text-emerald-300">
-                Tracking active
+            <span className="relative flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
             </span>
+
+            <span
+                className="
+                    text-sm
+                    font-semibold
+                    tracking-[0.12em]
+                    uppercase
+                    text-[#5F6975]
+                "
+            >
+                Live Analytics
+            </span>
+
         </div>
     );
 }

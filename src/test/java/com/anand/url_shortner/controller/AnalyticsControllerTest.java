@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,43 +67,32 @@ class AnalyticsControllerTest {
                 new AnalyticsResponse(
                         "abcd",
                         25L,
+                        5L,
                         "Chrome",
                         "Desktop",
                         "India",
-                        lastClickedAt
+                        lastClickedAt,
+                        List.of(),
+                        List.of(),
+                        List.of()
                 );
 
         when(analyticsService.getAnalytics("abcd"))
                 .thenReturn(response);
 
-        mockMvc.perform(
-                        get("/analytics/abcd")
-                )
+        mockMvc.perform(get("/analytics/abcd"))
                 .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.shortCode")
-                                .value("abcd")
-                )
-                .andExpect(
-                        jsonPath("$.clicks")
-                                .value(25)
-                )
-                .andExpect(
-                        jsonPath("$.topBrowser")
-                                .value("Chrome")
-                )
-                .andExpect(
-                        jsonPath("$.topDevice")
-                                .value("Desktop")
-                )
-                .andExpect(
-                        jsonPath("$.topCountry")
-                                .value("India")
-                )
-                .andExpect(
-                        jsonPath("$.lastClickedAt")
-                                .value("2026-07-12T02:30:00")
-                );
+                .andExpect(jsonPath("$.shortCode").value("abcd"))
+                .andExpect(jsonPath("$.totalClicks").value(25))
+                .andExpect(jsonPath("$.todayClicks").value(5))
+                .andExpect(jsonPath("$.topBrowser").value("Chrome"))
+                .andExpect(jsonPath("$.topDevice").value("Desktop"))
+                .andExpect(jsonPath("$.topCountry").value("India"))
+                .andExpect(jsonPath("$.lastClickedAt")
+                        .value("2026-07-12T02:30:00"))
+                .andExpect(jsonPath("$.browserStats").isArray())
+                .andExpect(jsonPath("$.dailyClicks").isArray())
+                .andExpect(jsonPath("$.recentActivities").isArray());
 
         verify(analyticsService)
                 .getAnalytics("abcd");
@@ -117,43 +107,31 @@ class AnalyticsControllerTest {
                 new AnalyticsResponse(
                         "abcd",
                         0L,
+                        0L,
                         null,
                         null,
                         null,
-                        null
+                        null,
+                        List.of(),
+                        List.of(),
+                        List.of()
                 );
 
         when(analyticsService.getAnalytics("abcd"))
                 .thenReturn(response);
 
-        mockMvc.perform(
-                        get("/analytics/abcd")
-                )
+        mockMvc.perform(get("/analytics/abcd"))
                 .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.shortCode")
-                                .value("abcd")
-                )
-                .andExpect(
-                        jsonPath("$.clicks")
-                                .value(0)
-                )
-                .andExpect(
-                        jsonPath("$.topBrowser")
-                                .doesNotExist()
-                )
-                .andExpect(
-                        jsonPath("$.topDevice")
-                                .doesNotExist()
-                )
-                .andExpect(
-                        jsonPath("$.topCountry")
-                                .doesNotExist()
-                )
-                .andExpect(
-                        jsonPath("$.lastClickedAt")
-                                .doesNotExist()
-                );
+                .andExpect(jsonPath("$.shortCode").value("abcd"))
+                .andExpect(jsonPath("$.totalClicks").value(0))
+                .andExpect(jsonPath("$.todayClicks").value(0))
+                .andExpect(jsonPath("$.topBrowser").doesNotExist())
+                .andExpect(jsonPath("$.topDevice").doesNotExist())
+                .andExpect(jsonPath("$.topCountry").doesNotExist())
+                .andExpect(jsonPath("$.lastClickedAt").doesNotExist())
+                .andExpect(jsonPath("$.browserStats").isArray())
+                .andExpect(jsonPath("$.dailyClicks").isArray())
+                .andExpect(jsonPath("$.recentActivities").isArray());
 
         verify(analyticsService)
                 .getAnalytics("abcd");

@@ -5,15 +5,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AnalyticsResponse {
 
+    // Summary
+
     private String shortCode;
 
-    private long clicks;
+    private long totalClicks;
+
+    private long todayClicks;
 
     private String topBrowser;
 
@@ -22,4 +27,14 @@ public class AnalyticsResponse {
     private String topCountry;
 
     private LocalDateTime lastClickedAt;
+
+    // Dashboard
+
+    private List<BrowserStatDto> browserStats;
+
+    private List<DailyClickDto> dailyClicks;
+
+    private List<RecentActivityDto> recentActivities;
+
+
 }

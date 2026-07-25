@@ -1,0 +1,597 @@
+/* ==========================================================
+   SNAPLINK PREMIUM NEUMORPHISM DESIGN SYSTEM
+   Version : 2.0
+========================================================== */
+
+:root{
+
+    /* COLORS */
+
+    --neo-page:#E8EDF2;
+    --neo-surface:#F3F6F9;
+    --neo-surface-light:#FCFDFE;
+    --neo-surface-dark:#E6EBF0;
+
+    --neo-white:rgba(255,255,255,.98);
+
+    --neo-text:#2C323A;
+    --neo-text-secondary:#66717D;
+    --neo-text-light:#909AA5;
+
+    --neo-primary:#2563EB;
+    --neo-success:#10B981;
+    --neo-warning:#F59E0B;
+    --neo-danger:#EF4444;
+
+    /* RADIUS */
+
+    --neo-radius-xl:36px;
+    --neo-radius-lg:30px;
+    --neo-radius-md:24px;
+    --neo-radius-sm:18px;
+    --neo-radius-pill:999px;
+
+    /* SHADOWS */
+
+    --neo-shadow-lg:
+            14px 14px 28px rgba(166,180,200,.30),
+            -14px -14px 28px rgba(255,255,255,.98);
+
+    --neo-shadow-md:
+            10px 10px 22px rgba(166,180,200,.26),
+            -10px -10px 22px rgba(255,255,255,.98);
+
+    --neo-shadow-sm:
+            7px 7px 16px rgba(166,180,200,.22),
+            -7px -7px 16px rgba(255,255,255,.98);
+
+    --neo-shadow-xs:
+            5px 5px 12px rgba(166,180,200,.20),
+            -5px -5px 12px rgba(255,255,255,.98);
+
+    --neo-shadow-hover:
+            18px 18px 34px rgba(166,180,200,.34),
+            -18px -18px 34px rgba(255,255,255,1);
+
+    --neo-shadow-inset:
+            inset 4px 4px 10px rgba(166,180,200,.18),
+            inset -4px -4px 10px rgba(255,255,255,.95);
+
+    --neo-transition:
+            .35s cubic-bezier(.22,.61,.36,1);
+
+}
+
+
+/* ==========================================================
+PAGE
+========================================================== */
+
+.neo-page{
+
+    background:var(--neo-page);
+
+    min-height:100vh;
+
+}
+
+
+/* ==========================================================
+MAIN CARD
+========================================================== */
+
+.neo-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:var(--neo-radius-xl);
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F8FAFC 0%,
+                    #F2F5F8 100%
+            );
+
+    border:1px solid rgba(255,255,255,.58);
+
+    box-shadow:var(--neo-shadow-lg);
+
+}
+
+
+/* ==========================================================
+MEDIUM CARD
+========================================================== */
+
+.neo-medium{
+
+    border-radius:var(--neo-radius-lg);
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F8FAFC 0%,
+                    #F2F5F8 100%
+            );
+
+    border:1px solid rgba(255,255,255,.50);
+
+    box-shadow:var(--neo-shadow-md);
+
+}
+
+
+/* ==========================================================
+SMALL CARD
+========================================================== */
+
+.neo-small{
+
+    border-radius:var(--neo-radius-md);
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F8FAFC 0%,
+                    #F2F5F8 100%
+            );
+
+    border:1px solid rgba(255,255,255,.45);
+
+    box-shadow:var(--neo-shadow-sm);
+
+}
+
+
+/* ==========================================================
+BUTTON
+========================================================== */
+
+.neo-button{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    border:none;
+
+    outline:none;
+
+    cursor:pointer;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F8FAFC,
+                    #F1F5F8
+            );
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.55);
+
+    box-shadow:var(--neo-shadow-xs);
+
+    transition:all var(--neo-transition);
+
+}
+
+.neo-button:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:var(--neo-shadow-md);
+
+}
+
+
+/* ==========================================================
+PILL
+========================================================== */
+
+.neo-pill{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 22px;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F8FAFC,
+                    #F2F5F8
+            );
+
+    border-radius:999px;
+
+    border:1px solid rgba(255,255,255,.55);
+
+    box-shadow:var(--neo-shadow-xs);
+
+}
+
+
+/* ==========================================================
+ICON
+========================================================== */
+
+.neo-icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:54px;
+
+    height:54px;
+
+    border-radius:18px;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #F9FBFD,
+                    #F2F5F8
+            );
+
+    border:1px solid rgba(255,255,255,.55);
+
+    box-shadow:var(--neo-shadow-xs);
+
+}
+
+
+/* ==========================================================
+INSET
+========================================================== */
+
+.neo-inset{
+
+    background:var(--neo-surface);
+
+    box-shadow:var(--neo-shadow-inset);
+
+}
+
+/* ==========================================================
+HOVER SYSTEM
+========================================================== */
+
+.neo-hover{
+
+    transition:
+            transform var(--neo-transition),
+            box-shadow var(--neo-transition),
+            filter var(--neo-transition);
+
+    will-change:transform;
+
+}
+
+.neo-hover:hover{
+
+    transform:
+            translateY(-5px)
+            scale(1.015);
+
+    box-shadow:var(--neo-shadow-hover);
+
+    filter:brightness(1.015);
+
+}
+
+
+/* ==========================================================
+GLASS HIGHLIGHT
+========================================================== */
+
+.neo-highlight{
+
+    position:relative;
+
+}
+
+.neo-highlight::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    top:0;
+
+    height:110px;
+
+    background:
+
+            linear-gradient(
+
+                    180deg,
+
+                    rgba(255,255,255,.72) 0%,
+
+                    rgba(255,255,255,.28) 35%,
+
+                    rgba(255,255,255,.08) 65%,
+
+                    transparent 100%
+
+            );
+
+    pointer-events:none;
+
+}
+
+.neo-highlight::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:inherit;
+
+    border:1px solid rgba(255,255,255,.25);
+
+    pointer-events:none;
+
+}
+
+
+/* ==========================================================
+TYPOGRAPHY
+========================================================== */
+
+.neo-title{
+
+    color:var(--neo-text-light);
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:.14em;
+
+    text-transform:uppercase;
+
+}
+
+.neo-heading{
+
+    color:var(--neo-text);
+
+    font-size:34px;
+
+    font-weight:700;
+
+    line-height:1.08;
+
+    letter-spacing:-.03em;
+
+}
+
+.neo-value{
+
+    color:var(--neo-text);
+
+    font-size:58px;
+
+    font-weight:800;
+
+    line-height:1;
+
+    letter-spacing:-.05em;
+
+}
+
+.neo-subtitle{
+
+    color:var(--neo-text-secondary);
+
+    font-size:16px;
+
+    line-height:1.75;
+
+}
+
+.neo-secondary{
+
+    color:var(--neo-text-secondary);
+
+    font-size:15px;
+
+    font-weight:500;
+
+}
+
+
+/* ==========================================================
+DIVIDER
+========================================================== */
+
+.neo-divider{
+
+    width:100%;
+
+    height:1px;
+
+    background:
+
+            linear-gradient(
+
+                    90deg,
+
+                    transparent,
+
+                    rgba(160,174,192,.35),
+
+                    transparent
+
+            );
+
+}
+
+
+/* ==========================================================
+SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#E8EDF2;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#C5CED8;
+
+    border-radius:999px;
+
+    border:2px solid #E8EDF2;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#B5C0CB;
+
+}
+
+
+/* ==========================================================
+ANIMATION
+========================================================== */
+
+@keyframes neoFade{
+
+    from{
+
+        opacity:0;
+
+        transform:
+                translateY(18px)
+                scale(.98);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+                translateY(0)
+                scale(1);
+
+    }
+
+}
+
+.neo-appear{
+
+    animation:
+            neoFade .55s ease forwards;
+
+}
+
+
+/* ==========================================================
+PREMIUM EFFECTS
+========================================================== */
+
+.neo-card,
+.neo-medium,
+.neo-small{
+
+    backdrop-filter:blur(2px);
+
+}
+
+.neo-card::after,
+.neo-medium::after,
+.neo-small::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:inherit;
+
+    box-shadow:
+
+            inset 0 1px 0 rgba(255,255,255,.65),
+
+            inset 0 -1px 0 rgba(210,220,230,.25);
+
+    pointer-events:none;
+
+}
+
+
+/* ==========================================================
+FOCUS
+========================================================== */
+
+.neo-button:focus-visible{
+
+    outline:none;
+
+    box-shadow:
+
+            0 0 0 4px rgba(37,99,235,.12),
+
+            var(--neo-shadow-md);
+
+}
+
+
+/* ==========================================================
+RESPONSIVE
+========================================================== */
+
+@media (max-width:768px){
+
+    .neo-card{
+
+        border-radius:30px;
+
+    }
+
+    .neo-heading{
+
+        font-size:28px;
+
+    }
+
+    .neo-value{
+
+        font-size:44px;
+
+    }
+
+}

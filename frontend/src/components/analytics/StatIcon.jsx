@@ -1,25 +1,61 @@
+import "./neumorphism.css";
+
 function StatIcon({
                       icon: Icon,
-                      bgColor = "bg-violet-500/15",
-                      iconColor = "text-violet-400",
                   }) {
+
     return (
+
         <div
-            className={`
-                flex h-14 w-14 items-center justify-center
-                rounded-2xl
-                ${bgColor}
+            className="
+                relative
+                flex
+                h-[72px]
+                w-[72px]
+                items-center
+                justify-center
+                rounded-[24px]
+                bg-[#EEF2F5]
                 transition-all
                 duration-300
-                group-hover:scale-110
-            `}
+                group-hover:scale-[1.04]
+            "
+            style={{
+                boxShadow:
+                    "10px 10px 20px rgba(163,177,198,.24), -10px -10px 20px rgba(255,255,255,.95)",
+            }}
         >
-            <Icon
-                size={24}
-                className={`${iconColor} transition-transform duration-300 group-hover:rotate-6`}
+
+            {/* Soft Highlight */}
+
+            <div
+                className="
+                    absolute
+                    top-0
+                    left-0
+                    h-1/2
+                    w-full
+                    rounded-t-[24px]
+                    bg-gradient-to-b
+                    from-white/70
+                    to-transparent
+                "
             />
+
+            <Icon
+                size={28}
+                strokeWidth={2}
+                className="
+                    relative
+                    z-10
+                    text-[#38404B]
+                "
+            />
+
         </div>
+
     );
+
 }
 
 export default StatIcon;

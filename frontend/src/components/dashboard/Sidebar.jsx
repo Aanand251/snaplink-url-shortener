@@ -37,7 +37,7 @@ function Sidebar({
                  }) {
     const navigate = useNavigate();
 
-    const { logout } = useAuth();
+    const { logout , user } = useAuth();
 
     const handleLogout = () => {
         logout();
@@ -339,17 +339,17 @@ function Sidebar({
                                     text-white
                                 "
                             >
-                                A
+                                {user?.name?.charAt(0).toUpperCase() || "U"}
                             </div>
 
                             <div className="flex-1">
 
                                 <h3 className="text-lg font-bold text-slate-800">
-                                    Anand
+                                    {user?.name || "User"}
                                 </h3>
 
                                 <p className="text-sm text-slate-500">
-                                    Premium User
+                                    {user?.email || ""}
                                 </p>
 
                             </div>

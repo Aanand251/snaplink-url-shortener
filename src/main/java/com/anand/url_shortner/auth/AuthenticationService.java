@@ -7,8 +7,6 @@ import com.anand.url_shortner.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,14 +16,17 @@ public class AuthenticationService {
     private final UserRepository userRepository;
 
     private final JwtService jwtService;
+
     private final AuthenticationManager authenticationManager;
 
     public LoginResponse login(LoginRequest request) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
-                        ));
+                )
+        );
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
@@ -33,10 +34,13 @@ public class AuthenticationService {
 
         String token = jwtService.generateToken(user.getEmail());
 
-        return new LoginResponse(
-                true,
-                "Login Successful",
-                token
-        );
-}
+        return LoginResponse.builder()
+                .success(true)
+                .message("Login Successful")
+                .token(token)
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
+    }
 }
