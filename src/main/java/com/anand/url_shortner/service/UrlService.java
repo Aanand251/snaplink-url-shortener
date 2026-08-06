@@ -1,5 +1,4 @@
 package com.anand.url_shortner.service;
-
 import com.anand.url_shortner.dto.CreateUrlRequest;
 import com.anand.url_shortner.dto.UpdateUrlRequest;
 import com.anand.url_shortner.dto.UrlResponse;
@@ -9,23 +8,16 @@ import com.anand.url_shortner.repository.UrlRepository;
 import com.anand.url_shortner.util.CacheKeys;
 import lombok.RequiredArgsConstructor;
 import com.anand.url_shortner.exception.ResourceAccessDeniedException;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class  UrlService {
-
     private static final Set<String> RESERVED_ALIASES = Set.of(
             "api",
             "auth",
@@ -39,27 +31,20 @@ public class  UrlService {
             "r",
             "favicon.ico"
     );
-
    // repo injection
+
    private final UrlRepository urlRepository;
     private final UserService userService;
     private final RedisService redisService;
-
-
-
 // creating short url;
 public String createShortUrl(CreateUrlRequest request) {
-
     if (request == null ||
             request.getOriginalUrl() == null ||
             request.getOriginalUrl().isBlank()) {
-
         throw new IllegalArgumentException("Original URL cannot be empty");
     }
-
     if (request.getExpiresAt() != null &&
             request.getExpiresAt().isBefore(LocalDateTime.now())) {
-
         throw new IllegalArgumentException(
                 "Expiry time must be in the future."
         );
@@ -91,28 +76,17 @@ public String createShortUrl(CreateUrlRequest request) {
             shortCode = generateShortCode();
         } while (urlRepository.findByShortCode(shortCode).isPresent());
     }
-
     User currentUser = userService.getCurrentUser();
-
     UrlMapping urlMapping = new UrlMapping();
-
     urlMapping.setOriginalUrl(request.getOriginalUrl());
     urlMapping.setShortCode(shortCode);
     urlMapping.setCreatedAt(LocalDateTime.now());
     urlMapping.setExpiresAt(request.getExpiresAt());
     urlMapping.setUser(currentUser);
-
     urlRepository.save(urlMapping);
-
     log.info("Short URL created successfully. ShortCode: {}", shortCode);
-
     return shortCode;
 }
-
-
-
-
-
 // generate 4 random characters
 private static final String CHARACTERS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -130,14 +104,10 @@ private static final String CHARACTERS =
                     )
             );
         }
-
         return shortCode.toString();
     }
-
-
     public List<UrlMapping> getAllUrls() {
         log.info("Fetching all URLs");
-
         return urlRepository.findAll();
     }
 //GETURLLIST
@@ -156,32 +126,23 @@ private static final String CHARACTERS =
 
 //DELETE
 public void deleteUrl(Long id) {
-
     User currentUser = userService.getCurrentUser();
-
     UrlMapping urlMapping = urlRepository
             .findByIdAndUser(id, currentUser)
             .orElseThrow(ResourceAccessDeniedException::new);
-
     urlRepository.delete(urlMapping);
     redisService.delete(CacheKeys.url(urlMapping.getShortCode()));
     log.info("URL deleted successfully. ID: {}", id);
 }
-
     //update
     public void updateUrl(Long id, UpdateUrlRequest request) {
-
         User currentUser = userService.getCurrentUser();
-
         UrlMapping urlMapping = urlRepository
                 .findByIdAndUser(id, currentUser)
                 .orElseThrow(ResourceAccessDeniedException::new);
-
         urlMapping.setOriginalUrl(request.getOriginalUrl());
-
         urlRepository.save(urlMapping);
         redisService.delete(CacheKeys.url(urlMapping.getShortCode()));
-
         log.info("URL updated successfully. ID: {}", id);
     }
 

@@ -3,7 +3,6 @@ package com.anand.url_shortner.service;
 import com.anand.url_shortner.dto.RegisterRequest;
 import com.anand.url_shortner.dto.RegisterResponse;
 import com.anand.url_shortner.entity.User;
-import com.anand.url_shortner.repository.UrlRepository;
 import com.anand.url_shortner.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +22,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import com.anand.url_shortner.entity.Role;
+import com.anand.url_shortner.entity.SuspensionType;
+import com.anand.url_shortner.exception.BadRequestException;
+
+import java.time.LocalDateTime;
+
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -32,9 +38,6 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UrlRepository urlRepository;
 
     @Mock
     private Authentication authentication;
@@ -155,5 +158,159 @@ class UserServiceTest {
                 exception.getMessage()
         );
     }
+    @Test
+    @DisplayName("Get Current User Should Throw Exception For Hard Suspended User")
+    void getCurrentUser_shouldThrowExceptionForHardSuspendedUser() {
+
+        user.setSuspended(true);
+        user.setSuspensionType(SuspensionType.HARD);
+
+        SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
+
+        when(authentication.getName())
+                .thenReturn("anand@gmail.com");
+
+        when(userRepository.findByEmail("anand@gmail.com"))
+                .thenReturn(Optional.of(user));
+
+        BadRequestException exception =
+                assertThrows(
+                        BadRequestException.class,
+                        () -> userService.getCurrentUser()
+                );
+
+        assertEquals(
+                "Your account has been permanently suspended.",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("Get Current User Should Throw Exception For Soft Suspended User")
+    void getCurrentUser_shouldThrowExceptionForSoftSuspendedUser() {
+
+        user.setSuspended(true);
+        user.setSuspensionType(SuspensionType.SOFT);
+        user.setSuspendedUntil(
+                LocalDateTime.now().plusDays(2)
+        );
+
+        SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
+
+        when(authentication.getName())
+                .thenReturn("anand@gmail.com");
+
+        when(userRepository.findByEmail("anand@gmail.com"))
+                .thenReturn(Optional.of(user));
+
+        BadRequestException exception =
+                assertThrows(
+                        BadRequestException.class,
+                        () -> userService.getCurrentUser()
+                );
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("temporarily suspended")
+        );
+    }
+
+    @Test
+    @DisplayName("Get Current User Should Reactivate Expired Suspended User")
+    void getCurrentUser_shouldReactivateExpiredSuspendedUser() {
+
+        user.setSuspended(true);
+        user.setSuspensionType(SuspensionType.SOFT);
+        user.setSuspendedUntil(
+                LocalDateTime.now().minusDays(1)
+        );
+
+        SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
+
+        when(authentication.getName())
+                .thenReturn("anand@gmail.com");
+
+        when(userRepository.findByEmail("anand@gmail.com"))
+                .thenReturn(Optional.of(user));
+
+        User result = userService.getCurrentUser();
+
+        assertFalse(result.isSuspended());
+        assertNull(result.getSuspensionType());
+        assertNull(result.getSuspendedUntil());
+        assertNull(result.getSuspendedAt());
+        assertNull(result.getSuspendedBy());
+    }
+
+    @Test
+    @DisplayName("Register Should Encode Password")
+    void register_shouldEncodePassword() {
+
+        when(userRepository.existsByEmail(any()))
+                .thenReturn(false);
+
+        when(passwordEncoder.encode(any()))
+                .thenReturn("encoded-password");
+
+        userService.register(registerRequest);
+
+        verify(passwordEncoder)
+                .encode("password123");
+    }
+
+    @Test
+    @DisplayName("Register Should Save User With Default Role")
+    void register_shouldSaveUserWithDefaultRole() {
+
+        when(userRepository.existsByEmail(any()))
+                .thenReturn(false);
+
+        when(passwordEncoder.encode(any()))
+                .thenReturn("encoded-password");
+
+        ArgumentCaptor<User> captor =
+                ArgumentCaptor.forClass(User.class);
+
+        userService.register(registerRequest);
+
+        verify(userRepository)
+                .save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        assertEquals(
+                Role.USER,
+                savedUser.getRole()
+        );
+    }
+
+    @Test
+    @DisplayName("Register Should Set CreatedAt")
+    void register_shouldSetCreatedAt() {
+
+        when(userRepository.existsByEmail(any()))
+                .thenReturn(false);
+
+        when(passwordEncoder.encode(any()))
+                .thenReturn("encoded-password");
+
+        ArgumentCaptor<User> captor =
+                ArgumentCaptor.forClass(User.class);
+
+        userService.register(registerRequest);
+
+        verify(userRepository)
+                .save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        assertNotNull(
+                savedUser.getCreatedAt()
+        );
+    }
+
 
 }

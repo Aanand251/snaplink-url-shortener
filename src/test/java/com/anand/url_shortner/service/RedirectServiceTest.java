@@ -16,6 +16,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import com.anand.url_shortner.exception.UrlExpiredException;
+import java.time.LocalDateTime;
 
 @ExtendWith(MockitoExtension.class)
 class RedirectServiceTest {
@@ -93,4 +95,143 @@ class RedirectServiceTest {
 
         verify(urlRepository).findByShortCode(shortCode);
     }
+    @Test
+    void shouldReturnNullWhenShortCodeIsNull() {
+
+        String result = redirectService.getOriginalUrl(null);
+
+        assertNull(result);
+
+        verifyNoInteractions(redisService);
+        verifyNoInteractions(urlRepository);
+    }
+    @Test
+    void shouldReturnNullWhenShortCodeIsBlank() {
+
+        String result = redirectService.getOriginalUrl("   ");
+
+        assertNull(result);
+
+        verifyNoInteractions(redisService);
+        verifyNoInteractions(urlRepository);
+    }
+
+    @Test
+    void shouldThrowUrlExpiredExceptionWhenUrlIsExpired() {
+
+        String shortCode = "abcd";
+
+        UrlMapping url = new UrlMapping();
+        url.setOriginalUrl("https://github.com");
+        url.setExpiresAt(
+                LocalDateTime.now().minusMinutes(5)
+        );
+
+        when(redisService.get(CacheKeys.url(shortCode)))
+                .thenReturn(null);
+
+        when(urlRepository.findByShortCode(shortCode))
+                .thenReturn(Optional.of(url));
+
+        assertThrows(
+                UrlExpiredException.class,
+                () -> redirectService.getOriginalUrl(shortCode)
+        );
+    }
+
+    @Test
+    void shouldDeleteRedisCacheWhenUrlIsExpired() {
+
+        String shortCode = "abcd";
+
+        UrlMapping url = new UrlMapping();
+        url.setExpiresAt(
+                LocalDateTime.now().minusHours(1)
+        );
+
+        when(redisService.get(CacheKeys.url(shortCode)))
+                .thenReturn(null);
+
+        when(urlRepository.findByShortCode(shortCode))
+                .thenReturn(Optional.of(url));
+
+        assertThrows(
+                UrlExpiredException.class,
+                () -> redirectService.getOriginalUrl(shortCode)
+        );
+
+        verify(redisService)
+                .delete(CacheKeys.url(shortCode));
+    }
+
+    @Test
+    void shouldNotSaveIntoRedisWhenCacheHit() {
+
+        String shortCode = "abcd";
+
+        when(redisService.get(CacheKeys.url(shortCode)))
+                .thenReturn("https://github.com");
+
+        redirectService.getOriginalUrl(shortCode);
+
+        verify(redisService, never())
+                .save(
+                        anyString(),
+                        anyString(),
+                        any()
+                );
+    }
+
+    @Test
+    void shouldCheckRedisBeforeDatabase() {
+
+        String shortCode = "abcd";
+
+        UrlMapping url = new UrlMapping();
+        url.setOriginalUrl("https://github.com");
+
+        when(redisService.get(CacheKeys.url(shortCode)))
+                .thenReturn(null);
+
+        when(urlRepository.findByShortCode(shortCode))
+                .thenReturn(Optional.of(url));
+
+        redirectService.getOriginalUrl(shortCode);
+
+        verify(redisService)
+                .get(CacheKeys.url(shortCode));
+
+        verify(urlRepository)
+                .findByShortCode(shortCode);
+    }
+
+    @Test
+    void shouldNotSaveIntoRedisWhenUrlIsExpired() {
+
+        String shortCode = "abcd";
+
+        UrlMapping url = new UrlMapping();
+        url.setExpiresAt(
+                LocalDateTime.now().minusDays(1)
+        );
+
+        when(redisService.get(CacheKeys.url(shortCode)))
+                .thenReturn(null);
+
+        when(urlRepository.findByShortCode(shortCode))
+                .thenReturn(Optional.of(url));
+
+        assertThrows(
+                UrlExpiredException.class,
+                () -> redirectService.getOriginalUrl(shortCode)
+        );
+
+        verify(redisService, never())
+                .save(
+                        anyString(),
+                        anyString(),
+                        any()
+                );
+    }
+
 }

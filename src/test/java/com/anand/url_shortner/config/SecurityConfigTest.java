@@ -1,11 +1,15 @@
 package com.anand.url_shortner.config;
 
+import com.anand.url_shortner.auth.CustomUserDetailsService;
 import com.anand.url_shortner.auth.JwtFilter;
 import com.anand.url_shortner.filter.RateLimitFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -166,5 +170,78 @@ class SecurityConfigTest {
         request.setRequestURI("/api/auth/login");
 
         return source.getCorsConfiguration(request);
+    }
+
+    @Test
+    @DisplayName("Should Allow Multiple Frontend Origins")
+    void corsConfiguration_shouldAllowMultipleOrigins() {
+
+        ReflectionTestUtils.setField(
+                securityConfig,
+                "allowedOrigins",
+                "http://localhost:5173,http://localhost:3000"
+        );
+
+        CorsConfiguration configuration =
+                getCorsConfiguration();
+
+        assertNotNull(configuration);
+        assertNotNull(configuration.getAllowedOrigins());
+
+        assertTrue(
+                configuration.getAllowedOrigins()
+                        .contains("http://localhost:5173")
+        );
+
+        assertTrue(
+                configuration.getAllowedOrigins()
+                        .contains("http://localhost:3000")
+        );
+    }
+
+    @Test
+    @DisplayName("Should Ignore Blank Origins")
+    void corsConfiguration_shouldIgnoreBlankOrigins() {
+
+        ReflectionTestUtils.setField(
+                securityConfig,
+                "allowedOrigins",
+                "http://localhost:5173, ,   ,http://localhost:3000"
+        );
+
+        CorsConfiguration configuration =
+                getCorsConfiguration();
+
+        assertNotNull(configuration);
+
+        assertEquals(
+                2,
+                configuration.getAllowedOrigins().size()
+        );
+
+        assertFalse(
+                configuration.getAllowedOrigins()
+                        .contains("")
+        );
+    }
+
+    @Test
+    @DisplayName("Should Create Authentication Manager")
+    void authenticationManager_shouldCreateBean() {
+
+        CustomUserDetailsService userDetailsService =
+                mock(CustomUserDetailsService.class);
+
+        PasswordEncoder passwordEncoder =
+                mock(PasswordEncoder.class);
+
+        AuthenticationManager authenticationManager =
+                securityConfig.authenticationManager(
+                        userDetailsService,
+                        passwordEncoder
+                );
+
+        assertNotNull(authenticationManager);
+        assertInstanceOf(ProviderManager.class, authenticationManager);
     }
 }

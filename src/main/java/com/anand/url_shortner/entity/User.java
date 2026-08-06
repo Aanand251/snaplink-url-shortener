@@ -41,6 +41,38 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.USER;
 
+    // ---------------- Moderation ----------------
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean marked = false;
+
+    @Enumerated(EnumType.STRING)
+    private MarkReason markedReason;
+
+    private LocalDateTime markedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "marked_by")
+    private User markedBy;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean suspended = false;
+
+    @Enumerated(EnumType.STRING)
+    private SuspensionType suspensionType;
+
+    private LocalDateTime suspendedUntil;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "suspended_by")
+    private User suspendedBy;
+
+    private LocalDateTime suspendedAt;
+
+    // --------------------------------------------
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 

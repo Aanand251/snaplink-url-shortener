@@ -70,11 +70,41 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
+                        // =============================
+                        // ADMIN + ACTING ADMIN
+                        // =============================
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/admin/users",
+                                "/api/admin/users/marked"
+                        )
+                        .hasAnyRole("ADMIN", "ACTING_ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/admin/users/*/mark",
+                                "/api/admin/users/*/unmark"
+                        )
+                        .hasAnyRole("ADMIN", "ACTING_ADMIN")
+
+                        // =============================
+                        // ADMIN ONLY
+                        // =============================
+
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
 
+                        // =============================
+                        // USER APIs
+                        // =============================
+
                         .requestMatchers("/api/url/**")
-                        .hasAnyRole("USER", "ADMIN")
+                        .hasAnyRole(
+                                "USER",
+                                "ADMIN",
+                                "ACTING_ADMIN"
+                        )
 
                         .anyRequest()
                         .authenticated()

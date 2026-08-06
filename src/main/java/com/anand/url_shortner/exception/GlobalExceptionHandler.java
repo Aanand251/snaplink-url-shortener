@@ -12,11 +12,13 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse>
-    handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidation(
+            MethodArgumentNotValidException ex
+    ) {
 
-        String message = Objects.requireNonNull(ex.getBindingResult()
-                        .getFieldError())
+        String message = Objects.requireNonNull(
+                        ex.getBindingResult().getFieldError()
+                )
                 .getDefaultMessage();
 
         ErrorResponse errorResponse =
@@ -31,8 +33,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UrlNotFoundException.class)
-    public ResponseEntity<ErrorResponse>
-    handleUrlNotFound(UrlNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleUrlNotFound(
+            UrlNotFoundException ex
+    ) {
+
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(
+            ResourceNotFoundException ex
+    ) {
 
         ErrorResponse errorResponse =
                 new ErrorResponse(
@@ -47,7 +66,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceAccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
-            ResourceAccessDeniedException ex) {
+            ResourceAccessDeniedException ex
+    ) {
 
         ErrorResponse errorResponse =
                 new ErrorResponse(
@@ -62,7 +82,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UrlExpiredException.class)
     public ResponseEntity<ErrorResponse> handleUrlExpired(
-            UrlExpiredException ex) {
+            UrlExpiredException ex
+    ) {
 
         ErrorResponse errorResponse =
                 new ErrorResponse(
@@ -77,7 +98,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
-            IllegalArgumentException ex) {
+            IllegalArgumentException ex
+    ) {
 
         ErrorResponse errorResponse =
                 new ErrorResponse(
@@ -90,5 +112,19 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(
+            BadRequestException ex
+    ) {
 
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
+    }
 }

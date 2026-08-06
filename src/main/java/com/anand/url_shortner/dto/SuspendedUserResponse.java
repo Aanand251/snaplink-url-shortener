@@ -1,6 +1,7 @@
 package com.anand.url_shortner.dto;
 
 import com.anand.url_shortner.entity.Role;
+import com.anand.url_shortner.entity.SuspensionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminUserResponse {
+public class SuspendedUserResponse {
 
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -22,13 +23,13 @@ public class AdminUserResponse {
 
     private Role role;
 
-    private boolean marked;
-
     private boolean suspended;
 
-    private Long totalLinks;
+    private SuspensionType suspensionType;
 
-    private Long totalClicks;
+    private LocalDateTime suspendedUntil;
 
-    private LocalDateTime createdAt;
+    private String suspendedBy;
+
+    private LocalDateTime suspendedAt;
 }

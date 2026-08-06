@@ -1,5 +1,6 @@
 package com.anand.url_shortner.dto;
 
+import com.anand.url_shortner.entity.MarkReason;
 import com.anand.url_shortner.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminUserResponse {
+public class MarkedUserResponse {
 
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -24,11 +25,11 @@ public class AdminUserResponse {
 
     private boolean marked;
 
+    private MarkReason reason;
+
+    private String markedBy;
+
+    private LocalDateTime markedAt;
+
     private boolean suspended;
-
-    private Long totalLinks;
-
-    private Long totalClicks;
-
-    private LocalDateTime createdAt;
 }
