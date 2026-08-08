@@ -32,7 +32,7 @@ public class AuthenticationService {
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user);
 
         return LoginResponse.builder()
                 .success(true)

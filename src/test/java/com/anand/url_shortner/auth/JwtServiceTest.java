@@ -1,5 +1,8 @@
 package com.anand.url_shortner.auth;
 
+import com.anand.url_shortner.entity.Role;
+import com.anand.url_shortner.entity.User;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,8 @@ class JwtServiceTest {
     private static final String SECRET =
             "VGhpc0lzQVN1cGVyU2VjcmV0S2V5Rm9ySldUVG9rZW5HZW5lcmF0aW9uMTIzNDU2";
 
+    private User user;
+
     @BeforeEach
     void setUp() {
 
@@ -26,6 +31,10 @@ class JwtServiceTest {
         );
 
         jwtService.init();
+
+        user = new User();
+        user.setEmail("anand@gmail.com");
+        user.setRole(Role.USER);
     }
 
     @Test
@@ -33,7 +42,7 @@ class JwtServiceTest {
     void generateToken_shouldReturnToken() {
 
         String token =
-                jwtService.generateToken("anand@gmail.com");
+                jwtService.generateToken(user);
 
         assertNotNull(token);
         assertFalse(token.isBlank());
@@ -44,7 +53,7 @@ class JwtServiceTest {
     void extractEmail_shouldReturnCorrectEmail() {
 
         String token =
-                jwtService.generateToken("anand@gmail.com");
+                jwtService.generateToken(user);
 
         String email =
                 jwtService.extractEmail(token);
@@ -56,11 +65,27 @@ class JwtServiceTest {
     }
 
     @Test
+    @DisplayName("Extract Role Should Return Correct Role")
+    void extractRole_shouldReturnCorrectRole() {
+
+        String token =
+                jwtService.generateToken(user);
+
+        String role =
+                jwtService.extractRole(token);
+
+        assertEquals(
+                "USER",
+                role
+        );
+    }
+
+    @Test
     @DisplayName("Valid Token Should Return True")
     void isTokenValid_shouldReturnTrue() {
 
         String token =
-                jwtService.generateToken("anand@gmail.com");
+                jwtService.generateToken(user);
 
         assertTrue(
                 jwtService.isTokenValid(
@@ -75,7 +100,7 @@ class JwtServiceTest {
     void isTokenValid_shouldReturnFalseForWrongEmail() {
 
         String token =
-                jwtService.generateToken("anand@gmail.com");
+                jwtService.generateToken(user);
 
         assertFalse(
                 jwtService.isTokenValid(
@@ -90,12 +115,12 @@ class JwtServiceTest {
     void extractClaim_shouldReturnSubject() {
 
         String token =
-                jwtService.generateToken("anand@gmail.com");
+                jwtService.generateToken(user);
 
         String subject =
                 jwtService.extractClaim(
                         token,
-                        claims -> claims.getSubject()
+                        Claims::getSubject
                 );
 
         assertEquals(
@@ -103,5 +128,4 @@ class JwtServiceTest {
                 subject
         );
     }
-
 }

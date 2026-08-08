@@ -1,17 +1,16 @@
 package com.anand.url_shortner.auth;
 
+import com.anand.url_shortner.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.time.Instant;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -22,28 +21,52 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    private SecretKey  secretKey;
+    private SecretKey secretKey;
 
     @PostConstruct
-    public void init(){
-        byte[] keyBytes  = Decoders.BASE64.decode(secret);
+    public void init() {
+
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(@Valid  String email){
+    public String generateToken(User user) {
+
         return Jwts.builder()
-                .subject(email)
+                .subject(user.getEmail())
+                .claim("role", user.getRole().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + 1000L * 60 * 60 * 24
+                        )
+                )
                 .signWith(secretKey)
                 .compact();
     }
 
     public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+
+        return extractClaim(
+                token,
+                Claims::getSubject
+        );
     }
 
-    public boolean isTokenValid(String token, String email) {
+    public String extractRole(String token) {
+
+        return extractClaim(
+                token,
+                claims -> claims.get("role", String.class)
+        );
+    }
+
+    public boolean isTokenValid(
+            String token,
+            String email
+    ) {
 
         return extractEmail(token).equals(email)
                 && !isTokenExpired(token);
@@ -57,12 +80,16 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
 
-        return extractClaim(token, Claims::getExpiration);
+        return extractClaim(
+                token,
+                Claims::getExpiration
+        );
     }
 
     public <T> T extractClaim(
             String token,
-            Function<Claims, T> resolver) {
+            Function<Claims, T> resolver
+    ) {
 
         Claims claims = extractAllClaims(token);
 
@@ -77,5 +104,4 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
 }

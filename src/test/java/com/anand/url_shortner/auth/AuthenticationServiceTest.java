@@ -2,6 +2,7 @@ package com.anand.url_shortner.auth;
 
 import com.anand.url_shortner.dto.LoginRequest;
 import com.anand.url_shortner.dto.LoginResponse;
+import com.anand.url_shortner.entity.Role;
 import com.anand.url_shortner.entity.User;
 import com.anand.url_shortner.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +51,7 @@ class AuthenticationServiceTest {
         user = new User();
         user.setEmail("anand@gmail.com");
         user.setPassword("encoded-password");
+        user.setRole(Role.USER);
     }
 
     @Test
@@ -59,7 +61,7 @@ class AuthenticationServiceTest {
         when(userRepository.findByEmail("anand@gmail.com"))
                 .thenReturn(Optional.of(user));
 
-        when(jwtService.generateToken("anand@gmail.com"))
+        when(jwtService.generateToken(user))
                 .thenReturn("dummy-jwt-token");
 
         LoginResponse response =
@@ -80,10 +82,12 @@ class AuthenticationServiceTest {
         );
 
         verify(authenticationManager)
-                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+                .authenticate(
+                        any(UsernamePasswordAuthenticationToken.class)
+                );
 
         verify(jwtService)
-                .generateToken("anand@gmail.com");
+                .generateToken(user);
     }
 
     @Test
@@ -112,13 +116,14 @@ class AuthenticationServiceTest {
         when(userRepository.findByEmail(anyString()))
                 .thenReturn(Optional.of(user));
 
-        when(jwtService.generateToken(anyString()))
+        when(jwtService.generateToken(any(User.class)))
                 .thenReturn("jwt-token");
 
         authenticationService.login(loginRequest);
 
         verify(authenticationManager, times(1))
-                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+                .authenticate(
+                        any(UsernamePasswordAuthenticationToken.class)
+                );
     }
-
 }
